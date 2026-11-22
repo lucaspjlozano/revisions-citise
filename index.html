@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Révisions CITISE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout : un catalogue de matières, une ligne par site (code matière · contenu · état · ouvrir), comme le sommaire d'un classeur. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #15202b;
+  --muted: #5b6875;
+  --line: #d9dfe5;
+  --accent: #1f5f8b;
+  --accent-ink: #ffffff;
+  --ok: #1d7a4f;
+  --ok-bg: #e3f3ea;
+  --wait: #8a5a00;
+  --wait-bg: #fbf0d9;
+  --off: #66707a;
+  --off-bg: #eceff2;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-text: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1418; --surface: #161d23; --ink: #e6ecf1; --muted: #93a1ad; --line: #2a343d;
+    --accent: #6fb3e0; --accent-ink: #0b1720;
+    --ok: #6fd3a0; --ok-bg: #143326; --wait: #f0c069; --wait-bg: #3a2c10; --off: #9aa5af; --off-bg: #222a31;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1418; --surface: #161d23; --ink: #e6ecf1; --muted: #93a1ad; --line: #2a343d;
+  --accent: #6fb3e0; --accent-ink: #0b1720;
+  --ok: #6fd3a0; --ok-bg: #143326; --wait: #f0c069; --wait-bg: #3a2c10; --off: #9aa5af; --off-bg: #222a31;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--f-text); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 48px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 32px; }
+header { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(32px, 6vw, 48px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 60ch; }
+.summary { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.summary b { color: var(--ink); font-weight: 500; }
+
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.row { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 8px 20px; align-items: start; padding: 22px 22px; border-top: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.code { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; color: var(--accent); padding-top: 5px; }
+.main { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.main h2 { font-family: var(--f-display); font-weight: 500; font-size: 21px; line-height: 1.2; margin: 0; text-wrap: balance; }
+.what { margin: 0; color: var(--muted); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; padding: 0; list-style: none; }
+.facts li { font-size: 12.5px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); }
+.side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.state { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.state.ok { color: var(--ok); background: var(--ok-bg); }
+.state.wait { color: var(--wait); background: var(--wait-bg); }
+.state.off { color: var(--off); background: var(--off-bg); }
+.open { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; text-decoration: none; background: var(--accent); color: var(--accent-ink); padding: 8px 14px; border-radius: 6px; white-space: nowrap; }
+.open:hover { filter: brightness(1.08); }
+.open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.date { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+footer { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 620px) {
+  .row { grid-template-columns: minmax(0, 1fr); padding: 18px 16px; }
+  .code { padding-top: 0; }
+  .side { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">CITISE · classeur de révisions</span>
+    <h1>Révisions CITISE</h1>
+    <p class="lead">Tous les sites de révision au même endroit : démos de colle, exos corrigés, flashcards de formules et fiches à imprimer.</p>
+    <div class="summary" id="summary"></div>
+  </header>
+
+  <ul class="list" id="list"></ul>
+
+  <footer id="foot">Les sites marqués « en ligne » s'ouvrent dans un nouvel onglet. Les autres sont encore en local et seront ajoutés ici dès leur publication.</footer>
+</div>
+
+<script>
+const SITES = [
+  { code: "MATHS", title: "Maths CITISE", what: "Maths pour l'ingénieur : démonstrations de colle, exemples de cours et exos de TD corrigés pas à pas.",
+    facts: ["S3 · 3 colles", "S4 · 6 fiches de cours", "56 exos S4 corrigés", "Colles blanches"], state: "ok", path: "maths/", url: "https://claude.ai/artifact/GdgPNVfXtAdCmeyZvowhQU", date: "2026-11-14" },
+  { code: "ONDES", title: "Démos d'Ondes", what: "Les démonstrations de la khôlle de physique des ondes, à comprendre puis à refaire de tête.",
+    facts: ["5 démos + bonus Maxwell", "d'Alembert · Helmholtz", "Câble coaxial · son · corde", "Errata des notes"], state: "ok", path: "ondes/", url: "https://claude.ai/artifact/GPJNvVev7uBYtVJDXB3k8p", date: "2026-11-06" },
+  { code: "FLUIDES", title: "Mécanique des fluides", what: "Les formules du cours en flashcards, QCM, conversions d'unités et évaluation notée sur 20.",
+    facts: ["5 chapitres", "Statique · fluides parfaits · réels", "Défi chrono"], state: "wait", path: "fluides/", date: "2026-10-15" },
+  { code: "VIDE", title: "Techniques du vide", what: "Fiche A4 dense : cours, tables du poly et exercices des TD, faite pour l'évaluation.",
+    facts: ["4 pages A4", "Conductance · pompes · fuites", "TD 1 à 4"], state: "wait", path: "vide/", date: "2026-11-19" },
+  { code: "COMM", title: "Communication", what: "Entraînement au QCM Entreprise & Communication : tout le cours en questions, QCM blancs notés sur 20 et fiche express.",
+    facts: ["391 questions", "5 séances", "QCM blanc · points négatifs", "Mes erreurs"], state: "wait", path: "communication/", date: "2026-11-22" },
+];
+// Sur GitHub Pages, chaque site est une page voisine : tout est en ligne, liens relatifs.
+const ON_GITHUB = /\.github\.io$/.test(location.hostname) || new URLSearchParams(location.search).has("github");
+if (ON_GITHUB) for (const s of SITES) if (s.path) { s.url = s.path; s.state = "ok"; }
+const LABEL = { ok: "En ligne", wait: "En local", off: "À venir" };
+const list = document.getElementById("list");
+for (const s of SITES) {
+  const li = document.createElement("li");
+  li.className = "row";
+  const facts = s.facts.length ? `<ul class="facts">${s.facts.map(f => `<li>${f}</li>`).join("")}</ul>` : "";
+  const action = s.url
+    ? (ON_GITHUB ? `<a class="open" href="${s.url}">Ouvrir <span aria-hidden="true">→</span></a>` : `<a class="open" href="${s.url}" target="_blank" rel="noopener">Ouvrir <span aria-hidden="true">↗</span></a>`)
+    : "";
+  const date = s.date ? `<span class="date">màj ${s.date.split("-").reverse().join("/")}</span>` : "";
+  li.innerHTML = `
+    <span class="code">${s.code}</span>
+    <div class="main"><h2>${s.title}</h2><p class="what">${s.what}</p>${facts}</div>
+    <div class="side"><span class="state ${s.state}">${LABEL[s.state]}</span>${action}${date}</div>`;
+  list.appendChild(li);
+}
+const n = k => SITES.filter(s => s.state === k).length;
+if (ON_GITHUB) document.getElementById("foot").textContent = "Chaque site garde ta progression dans ton navigateur. Faits pour réviser, à partir des cours CITISE.";
+document.getElementById("summary").innerHTML =
+  `<span><b>${SITES.length}</b> matières</span><span><b>${n("ok")}</b> en ligne</span><span><b>${n("wait")}</b> en local</span><span><b>${n("off")}</b> à venir</span>`;
+</script>
+
+</body>
+</html>

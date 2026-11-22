@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Révisions Mécanique des Fluides</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+:root{
+  --bg:#f6f7fb; --card:#ffffff; --text:#1c2333; --muted:#5d6782; --border:#dfe3ee;
+  --accent:#ff7a1a; --accent-soft:#fff0e4; --ok:#1f9d55; --ok-soft:#e5f6ec; --ko:#d64545; --ko-soft:#fde8e8;
+  --shadow:0 6px 24px rgba(20,30,60,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11141c; --card:#1b202c; --text:#e8ebf3; --muted:#9aa3ba; --border:#2c3344;
+    --accent:#ff8c3a; --accent-soft:#3a2614; --ok:#3fcf7e; --ok-soft:#163423; --ko:#ff6b6b; --ko-soft:#3c1b1b;
+    --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11141c; --card:#1b202c; --text:#e8ebf3; --muted:#9aa3ba; --border:#2c3344;
+  --accent:#ff8c3a; --accent-soft:#3a2614; --ok:#3fcf7e; --ok-soft:#163423; --ko:#ff6b6b; --ko-soft:#3c1b1b;
+  --shadow:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{max-width:860px;margin:0 auto;padding:24px 16px 8px}
+h1{margin:0;font-size:1.6rem}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:4px 0 0}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+nav button,.btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px 16px;border-radius:999px;cursor:pointer;font:inherit;font-weight:600}
+nav button.active,.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.ko{background:var(--ko);border-color:var(--ko);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:860px;margin:0 auto;padding:8px 16px 48px}
+.panel{display:none}.panel.active{display:block}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+select{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);max-width:100%}
+.progress{height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin:8px 0 16px}
+.progress div{height:100%;background:var(--accent);transition:width .3s}
+.stats{color:var(--muted);font-size:.9rem}
+/* flashcard */
+.scene{perspective:1200px;cursor:pointer;user-select:none}
+.flash{position:relative;min-height:300px;transition:transform .5s;transform-style:preserve-3d}
+.flash.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:28px 22px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:auto}
+.face.back{transform:rotateY(180deg)}
+.chip{position:absolute;top:14px;left:16px;font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:3px 10px;border-radius:99px}
+.hint{position:absolute;bottom:12px;font-size:.8rem;color:var(--muted)}
+.q{font-size:1.35rem;font-weight:700}
+.formula{font-size:1.25rem;margin:8px 0;max-width:100%;overflow-x:auto}
+.note{color:var(--muted);font-size:.95rem;margin-top:10px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+/* quiz + eval */
+.box{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:22px}
+.choices{display:grid;gap:10px;margin-top:16px}
+.choice{border:2px solid var(--border);background:var(--card);color:var(--text);border-radius:14px;padding:14px;cursor:pointer;font:inherit;text-align:center;overflow-x:auto}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice.good{border-color:var(--ok);background:var(--ok-soft)}
+.choice.bad{border-color:var(--ko);background:var(--ko-soft)}
+.data{background:var(--bg);border-radius:12px;padding:12px 14px;margin:12px 0;line-height:1.9}
+.answer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.answer input{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);width:200px;max-width:100%}
+.feedback{margin-top:14px;padding:14px;border-radius:12px;display:none}
+.feedback.good{display:block;background:var(--ok-soft);border:1px solid var(--ok)}
+.feedback.bad{display:block;background:var(--ko-soft);border:1px solid var(--ko)}
+.formhint{display:none;margin-top:12px;padding:12px;border-radius:12px;background:var(--accent-soft)}
+.list{display:grid;gap:10px}
+.list .item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px}
+.list .item b{display:block;margin-bottom:4px}
+.list h3{margin:18px 0 4px;color:var(--accent)}
+.lvl{float:right;font-size:.75rem;color:var(--muted)}
+.score{font-size:2.4rem;font-weight:800;color:var(--accent);text-align:center}
+.timer{font-size:2rem;font-weight:800;text-align:center;margin:8px 0;color:var(--accent);min-height:2.6rem}
+.timer.low{color:var(--ko)}
+.flashok{animation:fo .45s}.flashko{animation:fk .45s}
+@keyframes fo{0%{background:var(--ok-soft)}}@keyframes fk{0%{background:var(--ko-soft)}}
+details.box summary{cursor:pointer}
+table.conv{border-collapse:collapse;width:100%;margin:6px 0;font-size:.95rem}
+table.conv td,table.conv th{border-bottom:1px solid var(--border);padding:6px 8px;text-align:left}
+.tablewrap{overflow-x:auto}
+.pline{display:flex;justify-content:space-between;gap:8px;font-size:.95rem;margin-top:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;color:var(--muted);font-size:.9rem}
+.kpi b{display:block;font-size:1.6rem;color:var(--accent)}
+#progBox h3{color:var(--accent);margin:24px 0 6px}
+.stars{color:var(--accent);letter-spacing:2px;font-size:.9rem}
+.bigq{font-size:1.7rem;font-weight:800;text-align:center;margin:14px 0;overflow-wrap:anywhere}
+.hist{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.95rem}
+.katex-display{overflow-x:auto;overflow-y:hidden;max-width:100%;margin:.6em 0;padding:2px 4px;scrollbar-width:none}
+.katex-display::-webkit-scrollbar{display:none}
+.face>*{max-width:100%}
+.formula,.formhint,.feedback,.data,.item,.choice{min-width:0;max-width:100%}
+.formhint .katex-display,.feedback .katex-display{margin:.35em 0}
+@media (max-width:600px){ .katex-display{font-size:.92em} .face{padding:34px 14px 30px} .q{font-size:1.15rem} .bigq{font-size:1.35rem} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mécanique des <span>fluides</span> — révisions</h1>
+  <p class="sub">Formules des encadrés « À retenir » : flashcards, QCM, exercices d'application, conversions d'unités et défi chrono.</p>
+  <nav>
+    <button data-tab="cards" class="active">🃏 Flashcards</button>
+    <button data-tab="quiz">✅ QCM</button>
+    <button data-tab="eval">🧮 Évaluation</button>
+    <button data-tab="conv">🔁 Conversions</button>
+    <button data-tab="chrono">⚡ Défi chrono</button>
+    <button data-tab="sheet">📋 Fiche</button>
+    <button data-tab="prog">📊 Progrès</button>
+  </nav>
+</header>
+<main>
+  <!-- FLASHCARDS -->
+  <section id="cards" class="panel active">
+    <div class="toolbar">
+      <select id="cardChap"></select>
+      <select id="cardMode">
+        <option value="q">Question → Formule</option>
+        <option value="f">Formule → Nom</option>
+      </select>
+      <button class="btn" id="shuffle">🔀 Mélanger</button>
+      <button class="btn" id="onlyHard">Revoir mes « à revoir »</button>
+    </div>
+    <div class="stats" id="cardStats"></div>
+    <div class="progress"><div id="cardBar"></div></div>
+    <div class="scene" id="scene">
+      <div class="flash" id="flash">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="prev">←</button>
+      <button class="btn ko" id="hard">À revoir</button>
+      <button class="btn ok" id="easy">Je sais ✓</button>
+      <button class="btn" id="next">→</button>
+    </div>
+    <p class="stats" style="text-align:center">Clique sur la carte (ou Espace) pour la retourner · ← → pour naviguer</p>
+  </section>
+
+  <!-- QCM -->
+  <section id="quiz" class="panel">
+    <div class="toolbar">
+      <select id="quizType">
+        <option value="mix">Tout mélangé</option>
+        <option value="formules">Formules</option>
+        <option value="trous">Formules à trous</option>
+        <option value="unites">Unités</option>
+        <option value="concepts">Vrai / Faux &amp; concepts</option>
+      </select>
+      <select id="quizChap"></select>
+      <button class="btn primary" id="quizStart">Nouveau QCM (10 questions)</button>
+    </div>
+    <div class="progress"><div id="quizBar"></div></div>
+    <div class="box" id="quizBox"></div>
+  </section>
+
+  <!-- EVALUATION -->
+  <section id="eval" class="panel">
+    <div class="toolbar">
+      <select id="evalChap"></select>
+      <select id="evalLvl">
+        <option value="all">Tous niveaux</option>
+        <option value="1">★ Facile</option>
+        <option value="2">★★ Moyen</option>
+        <option value="3">★★★ Difficile</option>
+      </select>
+      <select id="evalN">
+        <option value="5">5 exercices</option>
+        <option value="8" selected>8 exercices</option>
+        <option value="12">12 exercices</option>
+        <option value="20">20 exercices</option>
+      </select>
+      <button class="btn primary" id="evalStart">Nouvelle évaluation</button>
+    </div>
+    <p class="stats">Valeurs tirées au hasard à chaque fois. Tolérance de ±2 %. On prend g = 9,81 m/s². Tu peux écrire 1,2e-3 ou 1,2×10^-3. 2 essais par exercice ; indice ou 2ᵉ essai = demi-point.</p>
+    <div class="progress"><div id="evalBar"></div></div>
+    <div class="box" id="evalBox"></div>
+  </section>
+
+  <!-- CONVERSIONS -->
+  <section id="conv" class="panel">
+    <div class="toolbar">
+      <select id="convCat"></select>
+      <button class="btn primary" id="convNew">Nouvelle conversion</button>
+    </div>
+    <p class="stats">Tolérance ±1 %. Écris 2,5e-6 ou 2,5×10^-6. Entrée pour valider, puis Entrée pour la suivante.</p>
+    <div class="stats" id="convStats"></div>
+    <div class="box" id="convBox"></div>
+    <details class="box" style="margin-top:16px"><summary><b>📐 Tableau des conversions</b></summary><div id="convTable"></div></details>
+  </section>
+
+  <!-- CHRONO -->
+  <section id="chrono" class="panel">
+    <div class="toolbar">
+      <select id="chronoChap"></select>
+      <select id="chronoDur"><option value="60">60 s</option><option value="90" selected>90 s</option><option value="180">3 min</option></select>
+      <button class="btn primary" id="chronoStart">▶ Lancer le défi</button>
+    </div>
+    <p class="stats">Un maximum de bonnes réponses avant la fin du temps (questions de tous types). Touches 1 à 4 pour répondre.</p>
+    <div class="timer" id="chronoTimer"></div>
+    <div class="box" id="chronoBox"><p style="text-align:center">Prêt ? Lance le défi ⚡</p></div>
+  </section>
+
+  <!-- PROGRES -->
+  <section id="prog" class="panel"><div id="progBox"></div></section>
+
+  <!-- FICHE -->
+  <section id="sheet" class="panel"><div class="list" id="sheetList"></div></section>
+</main>
+
+<script>
+// ------------------------------------------------------------------ DONNÉES
+const CHAPS = {
+  c0: "Unités & conversions",
+  c1: "Propriétés des fluides",
+  c2: "Statique des fluides",
+  c3: "Dynamique des fluides parfaits",
+  c4: "Fluides réels & pertes de charge"
+};
+const CARDS = [
+  {id:"st", c:"c0", q:"1 stokes (St) en m²/s", f:String.raw`1\ \text{St} = 1\ \text{cm}^2/\text{s} = 10^{-4}\ \text{m}^2/\text{s}`, n:"Le stokes est l'unité CGS de viscosité cinématique ν"},
+  {id:"cst", c:"c0", q:"1 centistokes (cSt) en m²/s", f:String.raw`1\ \text{cSt} = 1\ \text{mm}^2/\text{s} = 10^{-6}\ \text{m}^2/\text{s}`, n:"L'eau à 20 °C a ν ≈ 1 cSt"},
+  {id:"stder", c:"c0", q:"Dérivés du stokes : dSt, cSt, mSt", f:String.raw`\begin{aligned}1\ \text{dSt}&=10^{-5}\ \text{m}^2/\text{s}\\1\ \text{cSt}&=10^{-6}\ \text{m}^2/\text{s}\\1\ \text{mSt}&=10^{-7}\ \text{m}^2/\text{s}\end{aligned}`, n:"On part de 1 St = 10⁻⁴ m²/s et on applique le préfixe : d = 10⁻¹, c = 10⁻², m = 10⁻³"},
+  {id:"st2cst", c:"c0", q:"1 St en cSt", f:String.raw`1\ \text{St} = 100\ \text{cSt}`, n:""},
+  {id:"poise", c:"c0", q:"1 poise (P) en Pa·s", f:String.raw`1\ \text{P} = 0{,}1\ \text{Pa}\cdot\text{s}`, n:"Le poise est l'unité CGS de viscosité dynamique μ"},
+  {id:"cp", c:"c0", q:"1 centipoise (cP) en Pa·s", f:String.raw`1\ \text{cP} = 1\ \text{mPa}\cdot\text{s} = 10^{-3}\ \text{Pa}\cdot\text{s}`, n:"L'eau à 20 °C a μ ≈ 1 cP"},
+  {id:"pl", c:"c0", q:"1 poiseuille (Pl) en Pa·s et en poises", f:String.raw`1\ \text{Pl} = 1\ \text{Pa}\cdot\text{s} = 10\ \text{P}`, n:"Unité SI de viscosité dynamique"},
+  {id:"bar", c:"c0", q:"1 bar en Pa", f:String.raw`1\ \text{bar} = 10^5\ \text{Pa}`, n:"1 Pa = 1 N/m²"},
+  {id:"atm", c:"c0", q:"1 atmosphère (atm)", f:String.raw`1\ \text{atm} = 101\,325\ \text{Pa} \approx 1{,}013\ \text{bar} = 760\ \text{mmHg}`, n:""},
+  {id:"mce", c:"c0", q:"1 mètre de colonne d'eau (mCE) en Pa", f:String.raw`P=\rho g h \Rightarrow 1\ \text{mCE} \approx 9810\ \text{Pa}`, n:"10 m d'eau ≈ 1 bar"},
+  {id:"litre", c:"c0", q:"1 litre en m³", f:String.raw`1\ \text{L} = 1\ \text{dm}^3 = 10^{-3}\ \text{m}^3`, n:"1 mL = 1 cm³ = 10⁻⁶ m³"},
+  {id:"lmin", c:"c0", q:"1 L/min en m³/s", f:String.raw`1\ \text{L/min} = \frac{10^{-3}}{60}\ \text{m}^3/\text{s} \approx 1{,}67\times10^{-5}\ \text{m}^3/\text{s}`, n:"1 m³/h = 1/3600 m³/s"},
+  {id:"surf", c:"c0", q:"1 cm² et 1 mm² en m²", f:String.raw`1\ \text{cm}^2 = 10^{-4}\ \text{m}^2,\quad 1\ \text{mm}^2 = 10^{-6}\ \text{m}^2`, n:"Le facteur de longueur s'élève au carré : (10⁻²)² = 10⁻⁴"},
+  {id:"kmh", c:"c0", q:"m/s ⇄ km/h", f:String.raw`1\ \text{m/s} = 3{,}6\ \text{km/h}`, n:""},
+  {id:"beta", c:"c1", q:"Coefficient de compressibilité β", f:String.raw`\beta = -\frac{dV/V}{dP} = -\frac{dV}{V\,dP}`, n:"Unité : m²/N ou Pa⁻¹"},
+  {id:"rho", c:"c1", q:"Masse volumique ρ", f:String.raw`\rho = \frac{m}{V}`, n:"Unité : kg/m³"},
+  {id:"d", c:"c1", q:"Densité d", f:String.raw`d = \frac{\rho}{\rho_{ref}}`, n:"Liquide : ρref = ρeau = 1000 kg/m³ · Gaz : ρref = ρair = 1 kg/m³ (selon le cours). Sans unité."},
+  {id:"w", c:"c1", q:"Poids spécifique ϖ", f:String.raw`\varpi = \rho\, g`, n:"Unité : N/m³"},
+  {id:"u", c:"c1", q:"Volume massique υ", f:String.raw`\upsilon = \frac{1}{\rho}`, n:"Unité : m³/kg"},
+  {id:"mu", c:"c1", q:"Unité de la viscosité absolue (dynamique) μ", f:String.raw`[\mu] = \text{Pa}\cdot\text{s} = \text{Pl}`, n:"Pascal-seconde ou Poiseuille"},
+  {id:"nu", c:"c1", q:"Viscosité cinématique ν", f:String.raw`\nu = \frac{\mu}{\rho}`, n:"Unité : m²/s"},
+  {id:"force", c:"c2", q:"Force pressante F", f:String.raw`F = P\,S`, n:"F en N — P : pression en Pa, S : surface en m²"},
+  {id:"isobare", c:"c2", q:"Surface isobare : où la pression est-elle la même ?", f:String.raw`P_M = P_{M'} \ \text{si } z_M = z_{M'}`, n:"La pression est la même en tout point d'un même plan horizontal d'un même fluide en équilibre (attention : pas vrai si on change de fluide)."},
+  {id:"pfs", c:"c2", q:"Relation fondamentale de la statique des fluides", f:String.raw`P_2 - P_1 = -\rho\, g\,(z_2 - z_1)`, n:"Si on monte (z₂ > z₁), la pression diminue."},
+  {id:"archi", c:"c2", q:"Poussée d'Archimède P_A", f:String.raw`P_A = \rho_{fluide}\, V_{immergé}\, g`, n:"En N — ρ du fluide (pas du solide !), V : volume immergé"},
+
+  {id:"qm", c:"c3", q:"Débit massique qm", f:String.raw`q_m = \rho\, V\, S`, n:"kg/s — ρ : masse volumique, V : vitesse, S : section du tube de courant (m²)"},
+  {id:"qv", c:"c3", q:"Débit volumique Qv", f:String.raw`Q_V = \frac{dV}{dt} = S\frac{dx}{dt} = S\,V`, n:"Unité : m³/s"},
+  {id:"qmqv", c:"c3", q:"Relation entre débit massique et débit volumique", f:String.raw`q_m = \rho\, Q_V`, n:""},
+  {id:"bernP", c:"c3", q:"Théorème de Bernoulli (forme en pression)", f:String.raw`P + \rho g z + \tfrac{1}{2}\rho V^2 = C^{te}`, n:"En Pa, le long d'une ligne de courant (fluide parfait incompressible)"},
+  {id:"bernH", c:"c3", q:"Bernoulli en hauteur (charge)", f:String.raw`z + \frac{P}{\rho g} + \frac{V^2}{2g} = C^{te}`, n:"En mètres"},
+  {id:"bernE", c:"c3", q:"Bernoulli en énergie massique", f:String.raw`g z + \frac{P}{\rho} + \frac{V^2}{2} = C^{te}`, n:"En J/kg"},
+  {id:"pompe", c:"c3", q:"Bernoulli avec pompe ou turbine", f:String.raw`\begin{aligned}&P_1 + \rho g z_1 + \tfrac12\rho V_1^2\\ &= P_2 + \rho g z_2 + \tfrac12\rho V_2^2 \mp \frac{\mathcal{P}}{Q_V}\end{aligned}`, n:"𝒫 : puissance. Signe + : turbine ; signe − : pompe"},
+  {id:"euler", c:"c3", q:"Théorème d'Euler (quantité de mouvement)", f:String.raw`\sum \vec F_{ext} = q_m\,(\vec V_2 - \vec V_1)`, n:""},
+
+  {id:"re", c:"c4", q:"Nombre de Reynolds Re", f:String.raw`Re = \frac{V\,D}{\nu}`, n:"V : vitesse (m/s), D : diamètre (m), ν : viscosité cinématique (m²/s). Sans unité."},
+  {id:"regime", c:"c4", q:"Régimes d'écoulement selon Re", f:String.raw`\begin{aligned}Re<2000 &: \text{laminaire}\\ 2000<Re<3000 &: \text{transitoire}\\ Re>3000 &: \text{turbulent}\end{aligned}`, n:""},
+  {id:"bernR", c:"c4", q:"Bernoulli généralisé (fluide réel)", f:String.raw`\begin{aligned}&\frac{P_1}{\rho g} + z_1 + \frac{V_1^2}{2g}\\ &= \frac{P_2}{\rho g} + z_2 + \frac{V_2^2}{2g} + \Delta H_{1,2}\end{aligned}`, n:"ΔH₁,₂ : pertes de charge (m)"},
+  {id:"hr", c:"c4", q:"Pertes de charge régulières ΔHR", f:String.raw`\Delta H_R = \lambda\,\frac{L}{D}\,\frac{V^2}{2g}`, n:"λ : coefficient de perte de charge régulière, L : longueur (m), D : diamètre (m)"},
+  {id:"lambda", c:"c4", q:"Coefficient λ en écoulement laminaire", f:String.raw`\lambda = \frac{64}{Re}`, n:"En turbulent → diagramme de Moody"},
+  {id:"hs", c:"c4", q:"Pertes de charge singulières ΔHS", f:String.raw`\Delta H_S = \sum K_i\,\frac{V^2}{2g}`, n:"Kᵢ : coefficient de chaque singularité (coude, vanne, rétrécissement…)"},
+  {id:"htot", c:"c4", q:"Pertes de charge totales", f:String.raw`\Delta H_{TOT} = \Delta H_R + \Delta H_S`, n:""}
+];
+
+// ------------------------------------------------------------------ OUTILS
+const $ = s => document.querySelector(s);
+const tex1 = (s, display) => { try { return katex.renderToString(s,{displayMode:display,throwOnError:false}); } catch(e){ return s; } };
+// en mode bloc, une formule « A, B, C » est coupée en plusieurs lignes pour tenir sur téléphone
+const tex = (s, display=true) => display ? s.split(/,\\(?:quad|qquad| )\s*/).map(x=>tex1(x,true)).join("") : tex1(s,false);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+const rnd = (a,b,dec=2) => +(a + Math.random()*(b-a)).toFixed(dec);
+const pick = a => a[Math.random()*a.length|0];
+const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+const SUPINV=Object.fromEntries(Object.entries(SUP).map(([a,b])=>[b,a]));
+const sup = n => String(n).split("").map(c=>SUP[c]).join("");
+const fmt = x => { if(x===0) return "0"; const ax=Math.abs(x); if(ax>=1e5||ax<1e-3){ const [m,e]=x.toExponential(3).split("e"); return (+m).toString().replace(".",",")+" × 10"+sup(+e); } return (+x.toPrecision(4)).toString().replace(".",","); };
+// puissance de 10 exacte → "10⁻⁴", sinon nombre normal
+const sci = x => { const k=Math.log10(x); if(Math.abs(k-Math.round(k))<1e-9){ const r=Math.round(k); return r===0?"1":r===1?"10":"10"+sup(r); } return fmt(x); };
+function parseNum(s){
+  s=String(s).trim().replace(/\s/g,"").replace(/,/g,".").replace(/−/g,"-").replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>SUPINV[c]);
+  s=s.replace(/^10(\^|(?=[-+]))/,"1e").replace(/[×x*·]10\^?/i,"e");
+  if(!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(s)) return NaN;
+  return Number(s);
+}
+const G = 9.81;
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+function fillChap(sel){ sel.innerHTML = `<option value="all">Tous les chapitres</option>` + Object.entries(CHAPS).map(([k,v])=>`<option value="${k}">${v}</option>`).join(""); }
+["#cardChap","#quizChap","#evalChap","#chronoChap"].forEach(s=>fillChap($(s)));
+
+// ------------------------------------------------------------------ ONGLETS
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
+  if(b.dataset.tab==="prog") renderProg();
+  if(b.dataset.tab==="sheet") renderSheet();
+  if(b.dataset.tab==="conv" && !cq) newConv();
+});
+
+// ------------------------------------------------------------------ FLASHCARDS
+let know = store.get("mf-know",{});      // id -> true (sait) / false (à revoir)
+let deck = [], pos = 0, onlyHard = false;
+function buildDeck(doShuffle){
+  const ch = $("#cardChap").value;
+  deck = CARDS.filter(c => (ch==="all"||c.c===ch) && (!onlyHard || know[c.id]===false));
+  if(doShuffle) deck = shuffle(deck);
+  pos = 0; renderCard();
+}
+function renderCard(){
+  const flash = $("#flash"); flash.classList.remove("flipped");
+  const known = CARDS.filter(c=>know[c.id]===true).length;
+  $("#cardStats").textContent = deck.length ? `Carte ${pos+1} / ${deck.length} · Maîtrisées : ${known} / ${CARDS.length}` : "";
+  $("#cardBar").style.width = (known/CARDS.length*100)+"%";
+  if(!deck.length){ $("#front").innerHTML = `<div class="q">Aucune carte « à revoir » 🎉</div>`; $("#back").innerHTML=""; return; }
+  const c = deck[pos], mode = $("#cardMode").value;
+  const chip = `<span class="chip">${CHAPS[c.c]}</span>`;
+  const status = know[c.id]===true?"✓ sue":know[c.id]===false?"à revoir":"";
+  const qHTML = `<div class="q">${c.q}</div>`;
+  const fHTML = `<div class="formula">${tex(c.f)}</div>`;
+  const nHTML = c.n?`<div class="note">${c.n}</div>`:"";
+  setTimeout(()=>{ // laisse l'animation se terminer avant de changer le dos
+    if(mode==="q"){ $("#front").innerHTML = chip+qHTML+`<span class="hint">${status||"Retourner ↻"}</span>`; $("#back").innerHTML = chip+fHTML+nHTML; }
+    else { $("#front").innerHTML = chip+fHTML+`<span class="hint">${status||"Qu'est-ce que c'est ? ↻"}</span>`; $("#back").innerHTML = chip+qHTML+nHTML; }
+  }, flash.dataset.wasFlipped==="1"?250:0);
+  flash.dataset.wasFlipped="0";
+}
+function flip(){ const f=$("#flash"); f.classList.toggle("flipped"); f.dataset.wasFlipped = f.classList.contains("flipped")?"1":"0"; }
+function move(d){ if(!deck.length) return; pos=(pos+d+deck.length)%deck.length; renderCard(); }
+function mark(v){ if(!deck.length) return; know[deck[pos].id]=v; store.set("mf-know",know);
+  if(onlyHard && v){ const wasFlipped=$("#flash").dataset.wasFlipped; deck.splice(pos,1); if(pos>=deck.length) pos=0; $("#flash").dataset.wasFlipped=wasFlipped; renderCard(); } else move(1); }
+$("#scene").onclick = flip;
+$("#prev").onclick = ()=>move(-1); $("#next").onclick = ()=>move(1);
+$("#easy").onclick = ()=>mark(true); $("#hard").onclick = ()=>mark(false);
+$("#shuffle").onclick = ()=>buildDeck(true);
+$("#onlyHard").onclick = e => { onlyHard=!onlyHard; e.target.classList.toggle("primary",onlyHard); buildDeck(false); };
+$("#cardChap").onchange = ()=>buildDeck(false); $("#cardMode").onchange = renderCard;
+document.addEventListener("keydown", e => {
+  if(!$("#cards").classList.contains("active") || e.target.tagName==="INPUT") return;
+  if(e.code==="Space"){ e.preventDefault(); flip(); }
+  if(e.key==="ArrowRight") move(1); if(e.key==="ArrowLeft") move(-1);
+});
+buildDeck(false);
+
+// ------------------------------------------------------------------ CONVERSIONS (moteur, utilisé aussi par l'évaluation)
+// [unité, facteur vers l'unité SI de la grandeur, plage d'exposants réalistes pour la valeur de départ]
+const CONV = {
+  stokes:  {n:"Viscosité cinématique : stokes ⇄ m²/s", tip:"1 St = 1 cm²/s = 10⁻⁴ m²/s · 1 dSt = 10⁻⁵ m²/s · 1 cSt = 1 mm²/s = 10⁻⁶ m²/s · 1 mSt = 10⁻⁷ m²/s",
+            u:[["St",1e-4,[-2,1]],["dSt",1e-5,[-1,2]],["cSt",1e-6,[0,3]],["mSt",1e-7,[0,3]],["m²/s",1,[-7,-3]],["cm²/s",1e-4,[-2,1]],["mm²/s",1e-6,[0,3]]]},
+  poise:   {n:"Viscosité dynamique : poise ⇄ Pa·s", tip:"1 P = 0,1 Pa·s · 1 cP = 1 mPa·s = 10⁻³ Pa·s · 1 Pl = 1 Pa·s",
+            u:[["P",0.1,[-2,1]],["cP",1e-3,[0,3]],["Pa·s",1,[-3,0]],["Pl",1,[-3,0]],["mPa·s",1e-3,[0,3]]]},
+  pression:{n:"Pression", tip:"1 bar = 10⁵ Pa · 1 hPa = 100 Pa · 1 atm = 101 325 Pa = 760 mmHg · 1 mCE ≈ 9810 Pa",
+            u:[["Pa",1,[2,5]],["hPa",100,[0,3]],["kPa",1e3,[0,3]],["MPa",1e6,[-2,0]],["bar",1e5,[-1,1]],["mbar",100,[0,3]],["atm",101325,[-1,0]],["mmHg",133.322,[1,2]],["mCE",9810,[-1,1]]]},
+  volume:  {n:"Volume", tip:"1 L = 1 dm³ = 10⁻³ m³ · 1 mL = 1 cm³ = 10⁻⁶ m³ · 1 mm³ = 10⁻⁹ m³",
+            u:[["m³",1,[-3,0]],["dm³",1e-3,[-1,2]],["L",1e-3,[-1,2]],["dL",1e-4,[0,2]],["cL",1e-5,[0,2]],["mL",1e-6,[0,3]],["cm³",1e-6,[0,3]],["mm³",1e-9,[1,4]]]},
+  debit:   {n:"Débit volumique", tip:"1 L/s = 10⁻³ m³/s · 1 L/min = 10⁻³/60 m³/s · 1 m³/h = 1/3600 m³/s",
+            u:[["m³/s",1,[-4,-1]],["L/s",1e-3,[-1,2]],["L/min",1e-3/60,[0,3]],["L/h",1e-3/3600,[1,3]],["m³/h",1/3600,[-1,2]]]},
+  surface: {n:"Surface", tip:"On élève le facteur de longueur au carré : 1 cm = 10⁻² m → 1 cm² = 10⁻⁴ m² · 1 mm² = 10⁻⁶ m²",
+            u:[["m²",1,[-4,0]],["dm²",1e-2,[-1,2]],["cm²",1e-4,[0,3]],["mm²",1e-6,[0,4]]]},
+  vitesse: {n:"Vitesse", tip:"1 m/s = 3,6 km/h · 1 cm/s = 10⁻² m/s",
+            u:[["m/s",1,[-1,1]],["km/h",1/3.6,[0,2]],["cm/s",0.01,[0,2]],["mm/s",1e-3,[0,3]]]}
+};
+function niceVal(r){ const m=pick([1,1.2,1.5,2,2.5,3,3.5,4,4.5,5,6,7,7.5,8,9]); const e=r[0]+Math.floor(Math.random()*(r[1]-r[0]+1)); return +(m*Math.pow(10,e)).toPrecision(3); }
+function convQ(cat){
+  if(cat==="all") cat=pick(Object.keys(CONV));
+  const C=CONV[cat]; let a=pick(C.u), b=pick(C.u.filter(x=>x!==a));
+  // on insiste sur les conversions vers / depuis l'unité SI
+  if(cat==="stokes" && Math.random()<.6){ const st=pick(C.u.filter(x=>/St$/.test(x[0]))), si=C.u.find(x=>x[0]==="m²/s"); [a,b]=Math.random()<.5?[st,si]:[si,st]; }
+  if(cat==="poise" && Math.random()<.6){ const po=pick(C.u.filter(x=>/^c?P$/.test(x[0]))), si=C.u.find(x=>x[0]==="Pa·s"); [a,b]=Math.random()<.5?[po,si]:[si,po]; }
+  const v=niceVal(a[2]), k=a[1]/b[1];
+  return {cat, from:a[0], to:b[0], v, k, ans:v*k, tip:C.tip};
+}
+
+// ------------------------------------------------------------------ QCM : banques de questions
+const UNITS = [
+  {c:"c1", n:"la masse volumique ρ", u:"kg/m³"},
+  {c:"c1", n:"le poids spécifique ϖ", u:"N/m³"},
+  {c:"c1", n:"le volume massique υ", u:"m³/kg"},
+  {c:"c1", n:"la viscosité dynamique μ", u:"Pa·s"},
+  {c:"c1", n:"la viscosité cinématique ν", u:"m²/s"},
+  {c:"c1", n:"le coefficient de compressibilité β", u:"Pa⁻¹"},
+  {c:"c1", n:"la densité d", u:"sans unité"},
+  {c:"c2", n:"la pression P", u:"Pa"},
+  {c:"c2", n:"la force pressante F", u:"N"},
+  {c:"c2", n:"la poussée d'Archimède", u:"N"},
+  {c:"c3", n:"le débit massique qm", u:"kg/s"},
+  {c:"c3", n:"le débit volumique Qv", u:"m³/s"},
+  {c:"c3", n:"chaque terme de « z + P/ρg + V²/2g »", u:"m"},
+  {c:"c3", n:"chaque terme de « gz + P/ρ + V²/2 »", u:"J/kg"},
+  {c:"c3", n:"chaque terme de « P + ρgz + ½ρV² »", u:"Pa"},
+  {c:"c3", n:"la puissance hydraulique 𝒫", u:"W"},
+  {c:"c4", n:"le nombre de Reynolds Re", u:"sans unité"},
+  {c:"c4", n:"le coefficient de perte de charge λ", u:"sans unité"},
+  {c:"c4", n:"une perte de charge ΔH (forme hauteur)", u:"m"},
+  {c:"c0", n:"le stokes (St), exprimé en unités SI", u:"m²/s"},
+  {c:"c0", n:"le poise (P), exprimé en unités SI", u:"Pa·s"}
+];
+
+const BOX = String.raw`\boxed{\,?\,}`;
+const FILL = [
+  {c:"c1", n:"viscosité cinématique", f:String.raw`\nu = \frac{${BOX}}{\rho}`, a:String.raw`\mu`, w:["m","g","V"]},
+  {c:"c1", n:"poids spécifique", f:String.raw`\varpi = \rho\,${BOX}`, a:"g", w:["V",String.raw`\mu`,"d"]},
+  {c:"c1", n:"densité", f:String.raw`d = \frac{\rho}{${BOX}}`, a:String.raw`\rho_{ref}`, w:["g",String.raw`\rho g`,"V"]},
+  {c:"c1", n:"coefficient de compressibilité", f:String.raw`\beta = -\frac{dV}{${BOX}\,dP}`, a:"V", w:["P",String.raw`\rho`,"S"]},
+  {c:"c1", n:"volume massique", f:String.raw`\upsilon = \frac{1}{${BOX}}`, a:String.raw`\rho`, w:[String.raw`\mu`,"g","V"]},
+  {c:"c2", n:"relation fondamentale de la statique", f:String.raw`P_2-P_1 = -\rho g\,(${BOX})`, a:"z_2-z_1", w:["z_1-z_2","z_1+z_2","V_2-V_1"]},
+  {c:"c2", n:"poussée d'Archimède", f:String.raw`P_A = ${BOX}\,V_{immergé}\,g`, a:String.raw`\rho_{fluide}`, w:[String.raw`\rho_{solide}`,"m",String.raw`\mu`]},
+  {c:"c2", n:"force pressante", f:String.raw`F = P\,${BOX}`, a:"S", w:["V","g",String.raw`\rho`]},
+  {c:"c3", n:"débit massique", f:String.raw`q_m = ${BOX}\,Q_V`, a:String.raw`\rho`, w:["S","V","g"]},
+  {c:"c3", n:"débit volumique", f:String.raw`Q_V = S\,${BOX}`, a:"V", w:[String.raw`\rho`,"D","g"]},
+  {c:"c3", n:"Bernoulli (forme hauteur)", f:String.raw`z + \frac{P}{\rho g} + \frac{V^2}{${BOX}} = C^{te}`, a:"2g", w:["2","g",String.raw`\rho`]},
+  {c:"c3", n:"Bernoulli (forme énergie)", f:String.raw`gz + \frac{P}{\rho} + \frac{V^2}{${BOX}} = C^{te}`, a:"2", w:["2g",String.raw`\rho`,"g"]},
+  {c:"c3", n:"Bernoulli (forme pression)", f:String.raw`P + \rho g z + ${BOX} = C^{te}`, a:String.raw`\tfrac12\rho V^2`, w:[String.raw`\frac{V^2}{2g}`,String.raw`\rho V^2`,String.raw`\tfrac12 V^2`]},
+  {c:"c3", n:"théorème d'Euler", f:String.raw`\sum\vec F_{ext} = ${BOX}\,(\vec V_2-\vec V_1)`, a:"q_m", w:["Q_V",String.raw`\rho`,"S"]},
+  {c:"c4", n:"nombre de Reynolds", f:String.raw`Re = \frac{${BOX}\,D}{\nu}`, a:"V", w:[String.raw`\mu`,String.raw`\rho`,"g"]},
+  {c:"c4", n:"nombre de Reynolds", f:String.raw`Re = \frac{V\,D}{${BOX}}`, a:String.raw`\nu`, w:[String.raw`\mu`,String.raw`\rho`,"g"]},
+  {c:"c4", n:"pertes de charge régulières", f:String.raw`\Delta H_R = \lambda\,\frac{${BOX}}{D}\,\frac{V^2}{2g}`, a:"L", w:["S","Re","K"]},
+  {c:"c4", n:"pertes de charge régulières", f:String.raw`\Delta H_R = \lambda\,\frac{L}{D}\,${BOX}`, a:String.raw`\frac{V^2}{2g}`, w:[String.raw`\frac{V^2}{2}`,String.raw`\rho V^2`,String.raw`\frac{V}{2g}`]},
+  {c:"c4", n:"λ en écoulement laminaire", f:String.raw`\lambda = \frac{${BOX}}{Re}`, a:"64", w:["16","32","2000"]},
+  {c:"c4", n:"pertes de charge singulières", f:String.raw`\Delta H_S = \sum ${BOX}\,\frac{V^2}{2g}`, a:"K_i", w:[String.raw`\lambda_i`,String.raw`\frac{L}{D}`,"Re"]},
+  {c:"c0", n:"le stokes", f:String.raw`1\ \text{St} = ${BOX}\ \text{m}^2/\text{s}`, a:"10^{-4}", w:["10^{-2}","10^{-6}","1"]},
+  {c:"c0", n:"le centistokes", f:String.raw`1\ \text{cSt} = ${BOX}\ \text{m}^2/\text{s}`, a:"10^{-6}", w:["10^{-4}","10^{-2}","10^{-8}"]},
+  {c:"c0", n:"le millistokes", f:String.raw`1\ \text{mSt} = ${BOX}\ \text{m}^2/\text{s}`, a:"10^{-7}", w:["10^{-3}","10^{-6}","10^{-5}"]},
+  {c:"c0", n:"le poise", f:String.raw`1\ \text{P} = ${BOX}\ \text{Pa}\cdot\text{s}`, a:"0{,}1", w:["10","1","10^{-3}"]}
+];
+
+const VF = (c,q,v,e) => ({c, q:"Vrai ou faux ? "+q, o:["Vrai","Faux"], a:v?0:1, e, keep:true});
+const MC = (c,q,o,e) => ({c, q, o, a:0, e}); // la 1re option est la bonne (mélangée à l'affichage)
+const CONCEPTS = [
+  VF("c0","1 cSt = 1 mm²/s.",true,"1 cSt = 10⁻⁶ m²/s = 1 mm²/s."),
+  VF("c0","1 St = 1 m²/s.",false,"1 St = 1 cm²/s = 10⁻⁴ m²/s."),
+  VF("c0","1 Pl = 10 P.",true,"1 Pl = 1 Pa·s et 1 P = 0,1 Pa·s."),
+  VF("c0","1 St = 100 cSt.",true,"Le préfixe centi = 10⁻² : 1 cSt = 0,01 St."),
+  MC("c0","1 St = ?",["10⁻⁴ m²/s","10⁻² m²/s","10⁻⁶ m²/s","1 m²/s"],"1 St = 1 cm²/s = 10⁻⁴ m²/s."),
+  MC("c0","1 cSt = ?",["10⁻⁶ m²/s","10⁻⁴ m²/s","10⁻² m²/s","10⁻⁸ m²/s"],"1 cSt = 10⁻² St = 10⁻⁶ m²/s."),
+  MC("c0","1 mSt = ?",["10⁻⁷ m²/s","10⁻⁶ m²/s","10⁻³ m²/s","10⁻⁵ m²/s"],"1 mSt = 10⁻³ St = 10⁻⁷ m²/s."),
+  MC("c0","1 dSt = ?",["10⁻⁵ m²/s","10⁻⁴ m²/s","10⁻¹ m²/s","10⁻⁶ m²/s"],"1 dSt = 10⁻¹ St = 10⁻⁵ m²/s."),
+  MC("c0","10⁻⁴ m²/s = ?",["1 St","1 cSt","1 mSt","10 St"],""),
+  MC("c0","3×10⁻⁶ m²/s = ?",["3 cSt","3 St","0,3 cSt","30 cSt"],"10⁻⁶ m²/s = 1 cSt."),
+  MC("c0","Le stokes est une unité de…",["viscosité cinématique","viscosité dynamique","pression","débit"],""),
+  MC("c0","Le poise est une unité de…",["viscosité dynamique","viscosité cinématique","masse volumique","pression"],""),
+  MC("c0","1 P = ?",["0,1 Pa·s","10 Pa·s","1 Pa·s","10⁻³ Pa·s"],""),
+  MC("c0","1 cP = ?",["10⁻³ Pa·s","10⁻² Pa·s","0,1 Pa·s","10⁻⁶ Pa·s"],"1 cP = 1 mPa·s."),
+  MC("c0","1 bar = ?",["10⁵ Pa","10³ Pa","10⁶ Pa","101 325 Pa"],"101 325 Pa, c'est 1 atm."),
+  MC("c0","1 L = ?",["10⁻³ m³","10⁻⁶ m³","10⁻² m³","1 m³"],"1 L = 1 dm³."),
+  MC("c0","1 cm² = ?",["10⁻⁴ m²","10⁻² m²","10⁻⁶ m²","10⁻³ m²"],"(10⁻² m)² = 10⁻⁴ m²."),
+
+  VF("c1","Un liquide est quasiment incompressible (β très petit).",true,"Pour l'eau, β ≈ 5×10⁻¹⁰ Pa⁻¹."),
+  VF("c1","La densité d'un liquide s'exprime en kg/m³.",false,"La densité est un rapport de masses volumiques : sans unité."),
+  VF("c1","Plus la viscosité est grande, plus le fluide s'écoule facilement.",false,"Au contraire : le miel (très visqueux) s'écoule difficilement."),
+  VF("c1","Le volume massique est l'inverse de la masse volumique.",true,"υ = 1/ρ."),
+  VF("c1","Le poids spécifique s'exprime en N/m³.",true,"ϖ = ρg."),
+  VF("c1","ν = μ × ρ.",false,"ν = μ / ρ."),
+  MC("c1","Pourquoi y a-t-il un signe − dans β = −dV/(V·dP) ?",["Le volume diminue quand la pression augmente : le signe rend β positif","β est toujours négatif","C'est une convention sans raison physique","Car dP est toujours négatif"],""),
+  MC("c1","Un liquide de densité 0,8 a une masse volumique de…",["800 kg/m³","0,8 kg/m³","80 kg/m³","8000 kg/m³"],"ρ = d × 1000."),
+
+  VF("c2","Deux points à la même altitude dans un même fluide au repos ont la même pression.",true,"C'est une surface isobare."),
+  VF("c2","Deux points à la même altitude dans deux fluides différents ont toujours la même pression.",false,"L'isobare n'est valable que dans un même fluide (continu)."),
+  VF("c2","La pression dans un liquide au repos augmente avec la profondeur.",true,"P₂ − P₁ = −ρg(z₂ − z₁)."),
+  VF("c2","La pression au fond d'un récipient dépend de sa forme.",false,"Elle ne dépend que de la hauteur de liquide (paradoxe hydrostatique)."),
+  VF("c2","La poussée d'Archimède dépend de la masse volumique de l'objet immergé.",false,"Elle dépend de ρ du fluide et du volume immergé."),
+  VF("c2","La force pressante est perpendiculaire à la paroi.",true,""),
+  MC("c2","Un objet plein flotte si…",["ρ_objet < ρ_fluide","ρ_objet > ρ_fluide","son volume est grand","sa masse est faible"],""),
+  MC("c2","Une colonne de 10 m d'eau correspond à environ…",["1 bar","0,1 bar","10 bar","100 bar"],"ρgh = 1000 × 9,81 × 10 ≈ 98 100 Pa ≈ 1 bar."),
+  MC("c2","Quand on monte de z₁ à z₂ > z₁ dans un liquide, la pression…",["diminue","augmente","reste constante"],"P₂ = P₁ − ρg(z₂ − z₁)."),
+
+  VF("c3","En régime permanent, le débit massique se conserve le long d'un tube de courant.",true,"Conservation de la masse."),
+  VF("c3","Quand la section d'une conduite diminue, la vitesse diminue.",false,"Qv = S·V constant : si S diminue, V augmente."),
+  VF("c3","Dans un Venturi horizontal, la pression diminue au col.",true,"V augmente donc P diminue (Bernoulli)."),
+  VF("c3","Le Bernoulli des fluides parfaits tient compte des pertes de charge.",false,"Il faut le Bernoulli généralisé (fluides réels) avec ΔH."),
+  VF("c3","Le théorème d'Euler relie les forces extérieures à la variation de quantité de mouvement.",true,"ΣF = qm(V₂ − V₁)."),
+  MC("c3","Dans P₁+ρgz₁+½ρV₁² = P₂+ρgz₂+½ρV₂² ∓ 𝒫/Qv, quel signe pour une pompe ?",["−","+"],"Cours : + pour une turbine, − pour une pompe."),
+  MC("c3","À débit constant, si on divise le diamètre par 2, la vitesse est…",["multipliée par 4","multipliée par 2","divisée par 2","inchangée"],"S est divisée par 4 donc V est multipliée par 4."),
+  MC("c3","Chaque terme de « z + P/ρg + V²/2g » est…",["une hauteur (m)","une pression (Pa)","une énergie massique (J/kg)","une vitesse (m/s)"],""),
+  MC("c3","Le terme V²/2g s'appelle…",["la hauteur dynamique","la hauteur piézométrique","la pression statique","la perte de charge"],""),
+  MC("c3","Le tube de Pitot sert à mesurer…",["une vitesse","une masse volumique","une viscosité","une température"],"V = √(2ΔP/ρ)."),
+
+  VF("c4","Pour Re = 1500, l'écoulement est laminaire.",true,"Re < 2000."),
+  VF("c4","Pour Re = 2500, l'écoulement est turbulent.",false,"2000 < Re < 3000 : transitoire."),
+  VF("c4","En turbulent, λ se lit sur le diagramme de Moody.",true,""),
+  VF("c4","λ = 64/Re s'applique aussi en turbulent.",false,"Seulement en laminaire."),
+  VF("c4","Le nombre de Reynolds s'exprime en m²/s.",false,"Re est sans dimension."),
+  VF("c4","Les coudes, vannes et rétrécissements créent des pertes de charge singulières.",true,""),
+  MC("c4","Si on double la longueur d'une conduite, ΔHR est…",["doublée","quadruplée","inchangée","divisée par 2"],"ΔHR est proportionnelle à L."),
+  MC("c4","À λ constant, si on double la vitesse, ΔHR est…",["multipliée par 4","multipliée par 2","inchangée","divisée par 2"],"ΔHR est proportionnelle à V²."),
+  MC("c4","Avec des pertes de charge, la charge totale le long de l'écoulement…",["diminue","augmente","reste constante"],""),
+  MC("c4","Si la viscosité du fluide augmente (même V, même D), Re…",["diminue","augmente","ne change pas"],"Re = VD/ν."),
+  MC("c4","Pour Re = 5000, l'écoulement est…",["turbulent","laminaire","transitoire"],"Re > 3000.")
+];
+
+// ------------------------------------------------------------------ QCM : fabrication des questions
+function qCard(c){
+  const rev=Math.random()<.35;
+  const wrong=[...shuffle(CARDS.filter(x=>x.id!==c.id&&x.c===c.c)), ...shuffle(CARDS.filter(x=>x.c!==c.c))].slice(0,3);
+  const opts=shuffle([c,...wrong]);
+  return {c:c.c, kind:"Formule",
+    prompt: rev ? `<p class="q">À quoi correspond cette formule ?</p><div class="formula" style="text-align:center">${tex(c.f)}</div>` : `<p class="q">${c.q} : quelle est la bonne formule ?</p>`,
+    opts: opts.map(o=>rev?o.q:tex(o.f)), ok: opts.indexOf(c),
+    explain: `${c.q} : ${tex(c.f,false)}${c.n?"<br><span class='note'>"+c.n+"</span>":""}`};
+}
+function qUnit(u){
+  const others=shuffle([...new Set(UNITS.map(x=>x.u))].filter(x=>x!==u.u)).slice(0,3);
+  const opts=shuffle([u.u,...others]);
+  return {c:u.c, kind:"Unité", prompt:`<p class="q">Quelle est l'unité SI de ${u.n} ?</p>`, opts, ok:opts.indexOf(u.u), explain:`${u.n[0].toUpperCase()+u.n.slice(1)} : <b>${u.u}</b>`};
+}
+function qFill(f){
+  const opts=shuffle([f.a,...f.w]);
+  return {c:f.c, kind:"Formule à trous", prompt:`<p class="q">Complète la formule : ${f.n}</p><div class="formula" style="text-align:center">${tex(f.f)}</div>`,
+    opts: opts.map(o=>tex(o,false)), ok: opts.indexOf(f.a), explain: tex(f.f.split(BOX).join(String.raw`\boxed{${f.a}}`), false)};
+}
+function qConcept(k){
+  let o=k.o.map((t,i)=>({t,i})); if(!k.keep) o=shuffle(o);
+  return {c:k.c, kind:k.keep?"Vrai / Faux":"Concept", prompt:`<p class="q">${k.q}</p>`, opts:o.map(x=>x.t), ok:o.findIndex(x=>x.i===k.a),
+    explain:`Réponse : <b>${k.o[k.a]}</b>${k.e?"<br>"+k.e:""}`};
+}
+function factories(type, ch){
+  const f = x => ch==="all"||x.c===ch, L=[];
+  if(type==="mix"||type==="formules") L.push(...CARDS.filter(f).map(c=>()=>qCard(c)));
+  if(type==="mix"||type==="unites")   L.push(...UNITS.filter(f).map(u=>()=>qUnit(u)));
+  if(type==="mix"||type==="trous")    L.push(...FILL.filter(f).map(x=>()=>qFill(x)));
+  if(type==="mix"||type==="concepts") L.push(...CONCEPTS.filter(f).map(k=>()=>qConcept(k)));
+  return L;
+}
+// affiche une question à choix dans `box` ; onAnswer(bonne?) est appelé au clic
+function renderChoiceQ(box, q, header, onAnswer){
+  box.innerHTML = `<div class="stats">${header}</div>${q.prompt}<div class="choices">${q.opts.map((o,i)=>`<button class="choice" data-i="${i}"><span class="stats">${i+1}.</span> ${o}</button>`).join("")}</div><div class="feedback"></div>`;
+  box.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+    const good=+b.dataset.i===q.ok;
+    box.querySelectorAll(".choice").forEach(x=>{ x.disabled=true; if(+x.dataset.i===q.ok) x.classList.add("good"); });
+    if(!good) b.classList.add("bad");
+    onAnswer(good, box.querySelector(".feedback"));
+  });
+}
+// touches 1 à 4 pour répondre dans le QCM et le chrono
+document.addEventListener("keydown", e => {
+  if(e.target.tagName==="INPUT"||e.target.tagName==="SELECT") return;
+  const panel=document.querySelector(".panel.active"); if(!panel||!["quiz","chrono"].includes(panel.id)) return;
+  const n=parseInt(e.key); if(n>=1&&n<=4){ const b=panel.querySelectorAll(".choice")[n-1]; if(b&&!b.disabled) b.click(); }
+});
+
+// ------------------------------------------------------------------ QCM
+let quiz=[], qi=0, qscore=0;
+function startQuiz(){
+  const L=factories($("#quizType").value, $("#quizChap").value);
+  if(!L.length){ quiz=[]; $("#quizBar").style.width="0"; $("#quizBox").innerHTML="<p>Pas de questions de ce type pour ce chapitre : change de filtre.</p>"; return; }
+  quiz=shuffle(L).slice(0,10).map(f=>f()); qi=0; qscore=0; showQuiz();
+}
+function showQuiz(){
+  $("#quizBar").style.width=(qi/quiz.length*100)+"%";
+  if(qi>=quiz.length){
+    const h=store.get("mf-qhist",[]); h.push({d:Date.now(), s:qscore, n:quiz.length, t:$("#quizType").selectedOptions[0].text}); store.set("mf-qhist",h.slice(-30));
+    $("#quizBox").innerHTML = `<div class="score">${qscore} / ${quiz.length}</div><p style="text-align:center">${qscore===quiz.length?"Parfait ! 🔥":qscore>=quiz.length*.7?"Bien joué 👍":"Repasse par les flashcards 💪"}</p><div class="row"><button class="btn primary" onclick="startQuiz()">Recommencer</button></div>`;
+    return;
+  }
+  const q=quiz[qi];
+  renderChoiceQ($("#quizBox"), q, `Question ${qi+1} / ${quiz.length} · ${CHAPS[q.c]} · ${q.kind}`, (good, fb)=>{
+    if(good) qscore++;
+    fb.className="feedback "+(good?"good":"bad");
+    fb.innerHTML=`<b>${good?"Correct !":"Raté."}</b> ${q.explain}<div class="row"><button class="btn primary" id="qnext">Suivant →</button></div>`;
+    $("#qnext").onclick=()=>{qi++;showQuiz();}; $("#qnext").focus();
+  });
+}
+$("#quizStart").onclick=startQuiz;
+$("#quizType").onchange=startQuiz; $("#quizChap").onchange=startQuiz;
+startQuiz();
+
+// ------------------------------------------------------------------ ÉVALUATION (exercices générés)
+// Chaque générateur renvoie {t: titre, d: énoncé HTML, ask: ce qu'on demande, unit, ans: valeur, hint: formule latex, sol: correction HTML}
+const EX = [
+ {c:"c1", g(){ const m=rnd(0.5,20,2), V=rnd(0.5,15,1); const ans=m/(V*1e-3);
+   return {t:"Masse volumique", d:`Un récipient contient <b>${fmt(V)} L</b> d'un liquide de masse <b>${fmt(m)} kg</b>.`, ask:"Masse volumique ρ", unit:"kg/m³", ans,
+   hint:String.raw`\rho=\frac{m}{V}`, sol:`ρ = ${fmt(m)} / ${fmt(V*1e-3)} = <b>${fmt(ans)} kg/m³</b> (attention : 1 L = 10⁻³ m³)`}; }},
+ {c:"c1", g(){ const rho=pick([680,790,850,920,1030,1260,13600]); const ans=rho/1000;
+   return {t:"Densité", d:`Un liquide a une masse volumique <b>ρ = ${rho} kg/m³</b>.`, ask:"Densité d", unit:"—", ans,
+   hint:String.raw`d=\frac{\rho}{\rho_{eau}}`, sol:`d = ${rho} / 1000 = <b>${fmt(ans)}</b>`}; }},
+ {c:"c1", g(){ const d=rnd(0.6,1.6,2); const ans=d*1000*G;
+   return {t:"Poids spécifique", d:`Un liquide a une densité <b>d = ${fmt(d)}</b>.`, ask:"Poids spécifique ϖ", unit:"N/m³", ans,
+   hint:String.raw`\varpi=\rho g,\quad \rho=d\,\rho_{eau}`, sol:`ρ = ${fmt(d*1000)} kg/m³ → ϖ = ρg = <b>${fmt(ans)} N/m³</b>`}; }},
+ {c:"c1", g(){ const rho=rnd(600,1500,0); const ans=1/rho;
+   return {t:"Volume massique", d:`Un fluide a une masse volumique <b>ρ = ${rho} kg/m³</b>.`, ask:"Volume massique υ", unit:"m³/kg", ans,
+   hint:String.raw`\upsilon=\frac1\rho`, sol:`υ = 1/${rho} = <b>${fmt(ans)} m³/kg</b>`}; }},
+ {c:"c1", g(){ const mu=rnd(0.5,300,1)*1e-3, rho=rnd(700,1300,0); const ans=mu/rho;
+   return {t:"Viscosité cinématique", d:`Une huile a une viscosité dynamique <b>μ = ${fmt(mu)} Pa·s</b> et une masse volumique <b>ρ = ${rho} kg/m³</b>.`, ask:"Viscosité cinématique ν", unit:"m²/s", ans,
+   hint:String.raw`\nu=\frac{\mu}{\rho}`, sol:`ν = ${fmt(mu)} / ${rho} = <b>${fmt(ans)} m²/s</b>`}; }},
+ {c:"c1", g(){ const V=rnd(1,10,1), dV=rnd(0.5,5,1), dP=rnd(5,50,0); const ans=(dV*1e-3/V)/(dP*1e5);
+   return {t:"Compressibilité", d:`Un volume de <b>${fmt(V)} L</b> de liquide est comprimé : sa pression augmente de <b>${dP} bar</b> et son volume diminue de <b>${fmt(dV)} mL</b>.`, ask:"Coefficient de compressibilité β (valeur positive)", unit:"Pa⁻¹", ans,
+   hint:String.raw`\beta=-\frac{dV}{V\,dP}`, sol:`β = −(−${fmt(dV*1e-6)}) / (${fmt(V*1e-3)} × ${fmt(dP*1e5)}) = <b>${fmt(ans)} Pa⁻¹</b> (1 bar = 10⁵ Pa)`}; }},
+
+ {c:"c2", g(){ const P=rnd(1.5,10,1), D=pick([20,40,50,80,100]); const S=Math.PI*(D/1000)**2/4, ans=P*1e5*S;
+   return {t:"Force pressante", d:`Un piston circulaire de diamètre <b>${D} mm</b> est soumis à une pression de <b>${fmt(P)} bar</b>.`, ask:"Force pressante F", unit:"N", ans,
+   hint:String.raw`F=P\,S,\quad S=\frac{\pi D^2}{4}`, sol:`S = ${fmt(S)} m² ; P = ${fmt(P*1e5)} Pa → F = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c2", g(){ const h=rnd(2,40,1), rho=pick([1000,1030,850]); const ans=rho*G*h;
+   return {t:"Relation fondamentale de la statique", d:`Un plongeur est à <b>${fmt(h)} m</b> de profondeur dans un liquide de masse volumique <b>${rho} kg/m³</b>.`, ask:"Surpression par rapport à la surface (P − Patm)", unit:"Pa", ans,
+   hint:String.raw`P_2-P_1=-\rho g(z_2-z_1)`, sol:`P_fond − P_surface = ρ g h = ${rho} × 9,81 × ${fmt(h)} = <b>${fmt(ans)} Pa</b>`}; }},
+ {c:"c2", g(){ const d=pick([0.8,0.9,1,13.6]); const dP=rnd(0.05,0.5,2); const hh=dP*1e5/(d*1000*G);
+   return {t:"Manomètre / colonne de liquide", d:`Une différence de pression de <b>${fmt(dP)} bar</b> est mesurée avec un tube en U contenant un liquide de densité <b>d = ${d}</b>.`, ask:"Dénivellation h du liquide", unit:"m", ans:hh,
+   hint:String.raw`\Delta P=\rho g h\Rightarrow h=\frac{\Delta P}{\rho g}`, sol:`ρ = ${fmt(d*1000)} kg/m³ → h = ${fmt(dP*1e5)} / (${fmt(d*1000)} × 9,81) = <b>${fmt(hh)} m</b>`}; }},
+ {c:"c2", g(){ const V=rnd(0.5,20,1), rho=pick([1000,1030,800,13600]); const ans=rho*V*1e-3*G;
+   return {t:"Poussée d'Archimède", d:`Un objet de <b>${fmt(V)} L</b> est totalement immergé dans un liquide de masse volumique <b>${rho} kg/m³</b>.`, ask:"Poussée d'Archimède P_A", unit:"N", ans,
+   hint:String.raw`P_A=\rho_{fluide}\,V_{immergé}\,g`, sol:`P_A = ${rho} × ${fmt(V*1e-3)} × 9,81 = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c2", g(){ const rs=pick([500,600,700,850,920]), rf=pick([1000,1030]); const ans=rs/rf*100;
+   return {t:"Flottaison", d:`Un bloc de bois de masse volumique <b>${rs} kg/m³</b> flotte sur un liquide de masse volumique <b>${rf} kg/m³</b>.`, ask:"Pourcentage du volume immergé", unit:"%", ans,
+   hint:String.raw`\text{Équilibre : } \rho_{fluide} V_{imm} g = \rho_{solide} V g`, sol:`V_imm/V = ρ_solide/ρ_fluide = ${rs}/${rf} = <b>${fmt(ans)} %</b>`}; }},
+
+ {c:"c3", g(){ const D=pick([20,25,40,50,80,100,150]), V=rnd(0.5,4,1); const S=Math.PI*(D/1000)**2/4, ans=S*V;
+   return {t:"Débit volumique", d:`De l'eau circule à <b>V = ${fmt(V)} m/s</b> dans une conduite de diamètre <b>D = ${D} mm</b>.`, ask:"Débit volumique Qv", unit:"m³/s", ans,
+   hint:String.raw`Q_V=S\,V,\quad S=\frac{\pi D^2}{4}`, sol:`S = π×${fmt(D/1000)}²/4 = ${fmt(S)} m² → Qv = <b>${fmt(ans)} m³/s</b>`}; }},
+ {c:"c3", g(){ const Q=rnd(1,30,1), rho=pick([1000,850,1260,790]); const ans=rho*Q/1000;
+   return {t:"Débit massique", d:`Un liquide de masse volumique <b>${rho} kg/m³</b> s'écoule avec un débit volumique de <b>${fmt(Q)} L/s</b>.`, ask:"Débit massique qm", unit:"kg/s", ans,
+   hint:String.raw`q_m=\rho\,Q_V`, sol:`qm = ${rho} × ${fmt(Q/1000)} = <b>${fmt(ans)} kg/s</b>`}; }},
+ {c:"c3", g(){ const D1=pick([100,80,60,50]), D2=pick([40,30,25,20]), V1=rnd(0.5,3,1); const ans=V1*(D1/D2)**2;
+   return {t:"Conservation du débit", d:`Une conduite passe d'un diamètre <b>D₁ = ${D1} mm</b> à <b>D₂ = ${D2} mm</b>. La vitesse en 1 est <b>V₁ = ${fmt(V1)} m/s</b>.`, ask:"Vitesse V₂", unit:"m/s", ans,
+   hint:String.raw`Q_V = S_1V_1 = S_2V_2 \Rightarrow V_2=V_1\left(\frac{D_1}{D_2}\right)^2`, sol:`V₂ = ${fmt(V1)} × (${D1}/${D2})² = <b>${fmt(ans)} m/s</b>`}; }},
+ {c:"c3", g(){ const h=rnd(0.5,8,1); const ans=Math.sqrt(2*G*h);
+   return {t:"Vidange d'un réservoir (Torricelli)", d:`Un grand réservoir ouvert se vide par un petit orifice situé <b>${fmt(h)} m</b> sous la surface libre. On néglige la vitesse de la surface libre.`, ask:"Vitesse de sortie V", unit:"m/s", ans,
+   hint:String.raw`z_A+\frac{P_{atm}}{\rho g}+0 = z_B+\frac{P_{atm}}{\rho g}+\frac{V^2}{2g}\Rightarrow V=\sqrt{2gh}`, sol:`Bernoulli entre la surface et l'orifice : V = √(2×9,81×${fmt(h)}) = <b>${fmt(ans)} m/s</b>`}; }},
+ {c:"c3", g(){ const P1=rnd(1.5,4,1), V1=rnd(1,3,1), D1=100, D2=pick([50,60,70]); const V2=V1*(D1/D2)**2; const ans=(P1*1e5+0.5*1000*(V1*V1-V2*V2))/1e5;
+   return {t:"Bernoulli — rétrécissement (Venturi)", d:`Eau (ρ = 1000 kg/m³), conduite horizontale. En 1 : D₁ = ${D1} mm, V₁ = <b>${fmt(V1)} m/s</b>, P₁ = <b>${fmt(P1)} bar</b>. En 2 : D₂ = <b>${D2} mm</b>.`, ask:"Pression P₂", unit:"bar", ans,
+   hint:String.raw`P_1+\tfrac12\rho V_1^2=P_2+\tfrac12\rho V_2^2,\quad V_2=V_1\left(\tfrac{D_1}{D_2}\right)^2`, sol:`V₂ = ${fmt(V2)} m/s → P₂ = P₁ + ½ρ(V₁² − V₂²) = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c3", g(){ const Q=rnd(5,40,0), dz=rnd(5,40,0); const ans=1000*G*dz*Q/1000;
+   return {t:"Puissance d'une pompe", d:`Une pompe élève <b>${Q} L/s</b> d'eau entre deux bassins ouverts dont la différence de niveau est <b>${dz} m</b>. Vitesses des surfaces négligeables, fluide parfait.`, ask:"Puissance hydraulique 𝒫 fournie", unit:"W", ans,
+   hint:String.raw`\frac{\mathcal P}{Q_V}=\rho g (z_2-z_1)\Rightarrow \mathcal P=\rho g\,\Delta z\,Q_V`, sol:`𝒫 = 1000 × 9,81 × ${dz} × ${fmt(Q/1000)} = <b>${fmt(ans)} W</b>`}; }},
+ {c:"c3", g(){ const Q=rnd(5,50,0), D=pick([50,80,100]); const S=Math.PI*(D/1000)**2/4, V=Q/1000/S, ans=1000*Q/1000*V;
+   return {t:"Théorème d'Euler — jet sur une plaque", d:`Un jet d'eau de diamètre <b>${D} mm</b> et de débit <b>${Q} L/s</b> frappe perpendiculairement une plaque fixe et repart parallèlement à celle-ci.`, ask:"Force exercée par le jet sur la plaque", unit:"N", ans,
+   hint:String.raw`\sum\vec F=q_m(\vec V_2-\vec V_1)\Rightarrow F=q_m V_1`, sol:`V₁ = Qv/S = ${fmt(V)} m/s ; qm = ${fmt(Q)} kg/s → F = qm·V₁ = <b>${fmt(ans)} N</b>`}; }},
+
+ {c:"c4", g(){ const V=rnd(0.05,3,2), D=pick([10,20,25,50,100]), nu=pick([1e-6,1e-5,5e-5,1e-4]); const ans=V*D/1000/nu;
+   const reg = ans<2000?"laminaire":ans<3000?"transitoire":"turbulent";
+   return {t:"Nombre de Reynolds", d:`Un fluide de viscosité cinématique <b>ν = ${fmt(nu)} m²/s</b> s'écoule à <b>${fmt(V)} m/s</b> dans un tube de <b>${D} mm</b>.`, ask:"Nombre de Reynolds Re", unit:"—", ans,
+   hint:String.raw`Re=\frac{VD}{\nu}`, sol:`Re = ${fmt(V)} × ${fmt(D/1000)} / ${fmt(nu)} = <b>${fmt(ans)}</b> → écoulement <b>${reg}</b>`}; }},
+ {c:"c4", g(){ const Re=rnd(300,1900,0); const ans=64/Re;
+   return {t:"Coefficient λ", d:`Un écoulement a un nombre de Reynolds <b>Re = ${Re}</b>.`, ask:"Coefficient de perte de charge λ", unit:"—", ans,
+   hint:String.raw`Re<2000\Rightarrow\lambda=\frac{64}{Re}`, sol:`Écoulement laminaire → λ = 64/${Re} = <b>${fmt(ans)}</b>`}; }},
+ {c:"c4", g(){ const V=rnd(0.2,1.2,2), D=pick([10,15,20]), L=rnd(5,50,0), nu=1e-4; const Re=V*D/1000/nu, lam=64/Re, ans=lam*L/(D/1000)*V*V/(2*G);
+   return {t:"Pertes de charge régulières (laminaire)", d:`Une huile (ν = 10⁻⁴ m²/s) circule à <b>${fmt(V)} m/s</b> dans un tube de diamètre <b>${D} mm</b> et de longueur <b>${L} m</b>.`, ask:"Perte de charge régulière ΔHR", unit:"m", ans,
+   hint:String.raw`Re=\frac{VD}{\nu},\ \lambda=\frac{64}{Re},\ \Delta H_R=\lambda\frac{L}{D}\frac{V^2}{2g}`, sol:`Re = ${fmt(Re)} (laminaire) → λ = ${fmt(lam)} → ΔHR = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c4", g(){ const lam=pick([0.018,0.02,0.025,0.03]), L=rnd(10,200,0), D=pick([50,80,100]), V=rnd(1,3,1); const ans=lam*L/(D/1000)*V*V/(2*G);
+   return {t:"Pertes de charge régulières (turbulent)", d:`Écoulement turbulent ; le diagramme de Moody donne <b>λ = ${lam}</b>. Conduite : L = <b>${L} m</b>, D = <b>${D} mm</b>, V = <b>${fmt(V)} m/s</b>.`, ask:"Perte de charge régulière ΔHR", unit:"m", ans,
+   hint:String.raw`\Delta H_R=\lambda\frac{L}{D}\frac{V^2}{2g}`, sol:`ΔHR = ${lam} × ${L}/${fmt(D/1000)} × ${fmt(V)}²/(2×9,81) = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c4", g(){ const nC=pick([2,3,4]), Kc=pick([0.3,0.5,0.9]), Kv=pick([0.2,2,5]), V=rnd(1,3,1); const K=nC*Kc+Kv, ans=K*V*V/(2*G);
+   return {t:"Pertes de charge singulières", d:`Une conduite (V = <b>${fmt(V)} m/s</b>) comporte <b>${nC} coudes</b> (K = ${Kc} chacun) et <b>une vanne</b> (K = ${Kv}).`, ask:"Perte de charge singulière totale ΔHS", unit:"m", ans,
+   hint:String.raw`\Delta H_S=\sum K_i\frac{V^2}{2g}`, sol:`ΣK = ${nC}×${Kc} + ${Kv} = ${fmt(K)} → ΔHS = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c4", g(){ const z1=rnd(10,40,0), dH=rnd(1,8,1), D=pick([50,80,100]); const ans=Math.sqrt(2*G*(z1-dH));
+   return {t:"Bernoulli généralisé", d:`Un réservoir ouvert alimente une conduite (D = ${D} mm) qui débouche à l'air libre <b>${z1} m</b> plus bas que la surface libre. Les pertes de charge totales valent <b>ΔH = ${fmt(dH)} m</b>. Vitesse de la surface libre négligeable.`, ask:"Vitesse de sortie V₂", unit:"m/s", ans,
+   hint:String.raw`z_1 = z_2 + \frac{V_2^2}{2g} + \Delta H \Rightarrow V_2=\sqrt{2g(z_1-z_2-\Delta H)}`, sol:`V₂ = √(2×9,81×(${z1} − ${fmt(dH)})) = <b>${fmt(ans)} m/s</b>`}; }},
+
+ // ---------------- Unités & conversions
+ {c:"c0", l:1, g(){ const q=convQ(pick(["stokes","stokes","stokes","poise","poise","pression","volume","debit","surface"]));
+   return {t:"Conversion d'unités", d:`Convertis <b>${fmt(q.v)} ${q.from}</b> en <b>${q.to}</b>.`, ask:`Valeur en ${q.to}`, unit:q.to, ans:q.ans,
+   hintHTML:q.tip, sol:`1 ${q.from} = ${sci(q.k)} ${q.to} → ${fmt(q.v)} × ${sci(q.k)} = <b>${fmt(q.ans)} ${q.to}</b>`}; }},
+ {c:"c0", l:1, g(){ const x=pick([0.01,0.05,0.1,0.25,0.5,1,2.5,4]); const ans=x*100;
+   return {t:"Stokes → centistokes", d:`Une huile a une viscosité cinématique de <b>${fmt(x)} St</b>.`, ask:"Viscosité en cSt", unit:"cSt", ans,
+   hint:String.raw`1\ \text{St}=100\ \text{cSt}`, sol:`${fmt(x)} × 100 = <b>${fmt(ans)} cSt</b>`}; }},
+ {c:"c0", l:2, g(){ const n=pick([10,22,32,46,68,100,150,220,320]); const ans=n*1e-6;
+   return {t:"Huile hydraulique ISO VG", d:`Une huile ISO VG ${n} a une viscosité cinématique de <b>${n} cSt</b> à 40 °C.`, ask:"ν en m²/s", unit:"m²/s", ans,
+   hint:String.raw`1\ \text{cSt}=1\ \text{mm}^2/\text{s}=10^{-6}\ \text{m}^2/\text{s}`, sol:`ν = ${n} × 10⁻⁶ = <b>${fmt(ans)} m²/s</b>`}; }},
+ {c:"c0", l:2, g(){ const nu=+(pick([1,1.5,2,3,4.5,6,8])*Math.pow(10,pick([-6,-5,-4]))).toPrecision(3); const ans=nu/1e-4;
+   return {t:"m²/s → stokes", d:`Un fluide a une viscosité cinématique <b>ν = ${fmt(nu)} m²/s</b>.`, ask:"ν en stokes", unit:"St", ans,
+   hint:String.raw`1\ \text{St}=10^{-4}\ \text{m}^2/\text{s}\Rightarrow \nu_{St}=\frac{\nu_{m^2/s}}{10^{-4}}`, sol:`ν = ${fmt(nu)} / 10⁻⁴ = <b>${fmt(ans)} St</b>`}; }},
+
+ // ---------------- Propriétés des fluides
+ {c:"c1", l:2, g(){ const n=pick([10,22,32,46,68,100]), rho=pick([850,870,880,900]); const ans=n*1e-6*rho;
+   return {t:"Viscosité dynamique d'une huile", d:`Une huile a une viscosité cinématique <b>ν = ${n} cSt</b> et une masse volumique <b>ρ = ${rho} kg/m³</b>.`, ask:"Viscosité dynamique μ", unit:"Pa·s", ans,
+   hint:String.raw`\mu=\nu\,\rho,\quad 1\ \text{cSt}=10^{-6}\ \text{m}^2/\text{s}`, sol:`ν = ${fmt(n*1e-6)} m²/s → μ = νρ = <b>${fmt(ans)} Pa·s</b>`}; }},
+ {c:"c1", l:1, g(){ const V=rnd(2,200,0), d=pick([0.68,0.79,0.85,0.92,1.03,1.26]); const ans=d*V;
+   return {t:"Masse d'un liquide", d:`Un bidon contient <b>${V} L</b> d'un liquide de densité <b>d = ${fmt(d)}</b>.`, ask:"Masse du liquide", unit:"kg", ans,
+   hint:String.raw`m=\rho V,\quad \rho=d\,\rho_{eau}`, sol:`ρ = ${fmt(d*1000)} kg/m³ ; V = ${fmt(V/1000)} m³ → m = <b>${fmt(ans)} kg</b>`}; }},
+ {c:"c1", l:1, g(){ const V=rnd(0.5,5,1), rho=pick([1000,850,1260,13600]); const ans=rho*G*V;
+   return {t:"Poids d'un liquide", d:`Une cuve contient <b>${fmt(V)} m³</b> d'un liquide de masse volumique <b>${rho} kg/m³</b>.`, ask:"Poids du liquide", unit:"N", ans,
+   hint:String.raw`W=\varpi\,V=\rho g V`, sol:`W = ${rho} × 9,81 × ${fmt(V)} = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c1", l:1, g(){ const m=rnd(1,50,1), rho=pick([680,790,850,920,1000,1260]); const ans=m/rho*1000;
+   return {t:"Volume occupé", d:`On verse <b>${fmt(m)} kg</b> d'un liquide de masse volumique <b>${rho} kg/m³</b>.`, ask:"Volume occupé", unit:"L", ans,
+   hint:String.raw`V=\frac{m}{\rho}`, sol:`V = ${fmt(m)} / ${rho} = ${fmt(m/rho)} m³ = <b>${fmt(ans)} L</b>`}; }},
+ {c:"c1", l:2, g(){ const b=pick([4.5,4.6,4.8,5])*1e-10, V=rnd(1,10,1), dP=rnd(50,500,0); const ans=b*V*dP*1e5*1000;
+   return {t:"Variation de volume (compressibilité)", d:`<b>${fmt(V)} m³</b> d'eau (β = ${fmt(b)} Pa⁻¹) subissent une hausse de pression de <b>${dP} bar</b>.`, ask:"Diminution de volume |ΔV|", unit:"L", ans,
+   hint:String.raw`\beta=-\frac{\Delta V}{V\,\Delta P}\Rightarrow |\Delta V|=\beta\,V\,\Delta P`, sol:`|ΔV| = ${fmt(b)} × ${fmt(V)} × ${fmt(dP*1e5)} = ${fmt(ans/1000)} m³ = <b>${fmt(ans)} L</b>`}; }},
+ {c:"c1", l:2, g(){ const b=pick([4.5,4.6,4.8,5])*1e-10, x=pick([0.5,1,1.5,2]); const ans=x/100/b/1e5;
+   return {t:"Pression pour comprimer un liquide", d:`On veut réduire de <b>${fmt(x)} %</b> le volume d'une masse d'eau (β = ${fmt(b)} Pa⁻¹).`, ask:"Hausse de pression ΔP nécessaire", unit:"bar", ans,
+   hint:String.raw`\Delta P=\frac{|\Delta V|/V}{\beta}`, sol:`ΔP = ${fmt(x/100)} / ${fmt(b)} = ${fmt(ans*1e5)} Pa = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c1", l:2, g(){ const V1=rnd(1,10,0), V2=rnd(1,10,0), r1=pick([1000,1030]), r2=pick([790,850,920,1260]); const ans=(r1*V1+r2*V2)/(V1+V2);
+   return {t:"Masse volumique d'un mélange", d:`On mélange <b>${V1} L</b> d'un liquide (ρ₁ = ${r1} kg/m³) et <b>${V2} L</b> d'un autre (ρ₂ = ${r2} kg/m³). Volumes supposés additifs.`, ask:"Masse volumique du mélange", unit:"kg/m³", ans,
+   hint:String.raw`\rho=\frac{m_1+m_2}{V_1+V_2}=\frac{\rho_1V_1+\rho_2V_2}{V_1+V_2}`, sol:`m = ${fmt(r1*V1/1000)} + ${fmt(r2*V2/1000)} kg ; V = ${fmt((V1+V2)/1000)} m³ → ρ = <b>${fmt(ans)} kg/m³</b>`}; }},
+ {c:"c1", l:2, g(){ const mu=pick([1,1.8,10,50,250]), rho=pick([800,900,1000,1260]); const ans=mu*1e-3/rho/1e-6;
+   return {t:"Viscosité cinématique en cSt", d:`Un liquide a une viscosité dynamique <b>μ = ${mu} cP</b> et une masse volumique <b>ρ = ${rho} kg/m³</b>.`, ask:"ν en centistokes", unit:"cSt", ans,
+   hint:String.raw`\nu=\frac{\mu}{\rho},\ 1\ \text{cP}=10^{-3}\ \text{Pa}\cdot\text{s},\ 1\ \text{cSt}=10^{-6}\ \text{m}^2/\text{s}`, sol:`ν = ${fmt(mu*1e-3)} / ${rho} = ${fmt(mu*1e-3/rho)} m²/s = <b>${fmt(ans)} cSt</b>`}; }},
+
+ // ---------------- Statique des fluides
+ {c:"c2", l:1, g(){ const h=rnd(1,50,1); const ans=(101325+1000*G*h)/1e5;
+   return {t:"Pression absolue en profondeur", d:`Dans un lac (ρ = 1000 kg/m³), on descend à <b>${fmt(h)} m</b> sous la surface. P_atm = 101 325 Pa.`, ask:"Pression absolue", unit:"bar", ans,
+   hint:String.raw`P=P_{atm}+\rho g h`, sol:`P = 101 325 + 1000 × 9,81 × ${fmt(h)} = ${fmt(ans*1e5)} Pa = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c2", l:1, g(){ const P=rnd(0.5,6,1), rho=pick([1000,1030]); const ans=P*1e5/(rho*G);
+   return {t:"Profondeur d'un capteur", d:`Un capteur indique une pression relative de <b>${fmt(P)} bar</b> dans un liquide de masse volumique <b>${rho} kg/m³</b>.`, ask:"Profondeur du capteur", unit:"m", ans,
+   hint:String.raw`P_{rel}=\rho g h\Rightarrow h=\frac{P_{rel}}{\rho g}`, sol:`h = ${fmt(P*1e5)} / (${rho} × 9,81) = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c2", l:2, g(){ const h=rnd(1,6,1), a=rnd(1,5,1), b=rnd(1,5,1); const ans=1000*G*h*a*b/1000;
+   return {t:"Force sur le fond d'une cuve", d:`Une cuve rectangulaire (fond de <b>${fmt(a)} m × ${fmt(b)} m</b>) contient <b>${fmt(h)} m</b> d'eau. On raisonne en pression relative.`, ask:"Force pressante sur le fond", unit:"kN", ans,
+   hint:String.raw`F=P\,S=\rho g h\,S`, sol:`P = ρgh = ${fmt(1000*G*h)} Pa ; S = ${fmt(a*b)} m² → F = ${fmt(ans*1000)} N = <b>${fmt(ans)} kN</b>`}; }},
+ {c:"c2", l:1, g(){ const d1=pick([10,20,25,30]), d2=pick([100,150,200,250]), F1=rnd(50,500,0); const ans=F1*(d2/d1)**2;
+   return {t:"Presse hydraulique", d:`On applique <b>${F1} N</b> sur un petit piston de <b>${d1} mm</b> de diamètre. Le grand piston fait <b>${d2} mm</b> de diamètre.`, ask:"Force sur le grand piston", unit:"N", ans,
+   hint:String.raw`\frac{F_1}{S_1}=\frac{F_2}{S_2}\Rightarrow F_2=F_1\left(\frac{D_2}{D_1}\right)^2`, sol:`Même pression sous les deux pistons → F₂ = ${F1} × (${d2}/${d1})² = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c2", l:2, g(){ const hh=rnd(5,30,1), rh=pick([800,850,900,920]); const ans=rh*hh/1000;
+   return {t:"Tube en U eau / huile", d:`Un tube en U contient de l'eau. Dans une branche, on verse une colonne d'huile (ρ = ${rh} kg/m³) de <b>${fmt(hh)} cm</b>.`, ask:"Hauteur d'eau au-dessus du niveau de l'interface, dans l'autre branche", unit:"cm", ans,
+   hint:String.raw`\text{Isobare dans l'eau : } \rho_h\,g\,h_h=\rho_e\,g\,h_e`, sol:`h_e = ρ_h·h_h / ρ_e = ${rh} × ${fmt(hh)} / 1000 = <b>${fmt(ans)} cm</b>`}; }},
+ {c:"c2", l:1, g(){ const P=rnd(980,1040,0); const ans=P*100/(13600*G)*1000;
+   return {t:"Baromètre à mercure", d:`La pression atmosphérique vaut <b>${P} hPa</b>. Mercure : ρ = 13 600 kg/m³.`, ask:"Hauteur de la colonne de mercure", unit:"mm", ans,
+   hint:String.raw`P_{atm}=\rho_{Hg}\,g\,h`, sol:`h = ${P*100} / (13 600 × 9,81) = ${fmt(ans/1000)} m = <b>${fmt(ans)} mm</b>`}; }},
+ {c:"c2", l:2, g(){ const V=rnd(0.5,10,1), rs=pick([2700,7800,8900]); const ans=(rs-1000)*V*1e-3*G;
+   return {t:"Poids apparent", d:`Un objet de <b>${fmt(V)} L</b> et de masse volumique <b>${rs} kg/m³</b> est totalement immergé dans l'eau.`, ask:"Poids apparent (poids − poussée d'Archimède)", unit:"N", ans,
+   hint:String.raw`W_{app}=\rho_s V g-\rho_{eau} V g`, sol:`W = ${fmt(rs*V*1e-3*G)} N ; P_A = ${fmt(1000*V*1e-3*G)} N → W_app = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c2", l:3, g(){ const rs=pick([2700,7800,8900,11300,19300]), V=rnd(0.1,1,2); const m=rs*V/1000, ma=(rs-1000)*V/1000; const fx=x=>x.toFixed(4).replace(".",",");
+   return {t:"Pesée hydrostatique", d:`Une balance indique <b>${fx(m)} kg</b> pour un objet dans l'air, et <b>${fx(ma)} kg</b> quand il est totalement immergé dans l'eau.`, ask:"Masse volumique de l'objet", unit:"kg/m³", ans:rs,
+   hint:String.raw`(m-m_{app})\,g=\rho_{eau}\,V g\Rightarrow V=\frac{m-m_{app}}{\rho_{eau}},\quad \rho=\frac{m}{V}`, sol:`V = (${fx(m)} − ${fx(ma)}) / 1000 = ${fmt(V/1000)} m³ → ρ = m/V = <b>${rs} kg/m³</b>`}; }},
+ {c:"c2", l:1, g(){ const P1=rnd(1,5,2), z1=rnd(0,5,1), dz=rnd(-10,8,1)||2; const ans=P1-1000*G*dz/1e5;
+   return {t:"Pression entre deux points", d:`Dans de l'eau au repos, la pression au point 1 (z₁ = ${fmt(z1)} m) vaut <b>${fmt(P1)} bar</b>. Le point 2 est à <b>z₂ = ${fmt(+(z1+dz).toFixed(1))} m</b>.`, ask:"Pression au point 2", unit:"bar", ans,
+   hint:String.raw`P_2-P_1=-\rho g(z_2-z_1)`, sol:`P₂ = ${fmt(P1*1e5)} − 1000 × 9,81 × (${fmt(dz)}) = ${fmt(ans*1e5)} Pa = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c2", l:2, g(){ const m=rnd(60,150,0); const ans=m/1030*1000;
+   return {t:"Volume d'une bouée", d:`Une bouée de masse négligeable doit maintenir à flot une charge de <b>${m} kg</b> en mer (ρ = 1030 kg/m³), en étant tout juste totalement immergée.`, ask:"Volume minimal de la bouée", unit:"L", ans,
+   hint:String.raw`\rho_{mer}\,V\,g=m\,g\Rightarrow V=\frac{m}{\rho_{mer}}`, sol:`V = ${m} / 1030 = ${fmt(ans/1000)} m³ = <b>${fmt(ans)} L</b>`}; }},
+ {c:"c2", l:2, g(){ const a=rnd(10,50,0), rs=pick([450,600,700,850]), rf=pick([1000,1030]); const ans=a*rs/rf;
+   return {t:"Enfoncement d'un cube flottant", d:`Un cube de bois de <b>${a} cm</b> d'arête (ρ = ${rs} kg/m³) flotte sur un liquide de masse volumique <b>${rf} kg/m³</b>.`, ask:"Hauteur immergée", unit:"cm", ans,
+   hint:String.raw`\rho_f\,(a^2 h)\,g=\rho_s\,a^3\,g\Rightarrow h=a\,\frac{\rho_s}{\rho_f}`, sol:`h = ${a} × ${rs} / ${rf} = <b>${fmt(ans)} cm</b>`}; }},
+ {c:"c2", l:2, g(){ const h=rnd(20,500,0); const ans=13600*G*h/1000/1000;
+   return {t:"Manomètre à mercure", d:`Un manomètre en U à mercure (ρ = 13 600 kg/m³) branché sur un réservoir de gaz présente une dénivellation de <b>${h} mm</b>, l'autre branche étant à l'air libre (on néglige ρ du gaz).`, ask:"Pression relative du gaz", unit:"kPa", ans,
+   hint:String.raw`P_{gaz}-P_{atm}=\rho_{Hg}\,g\,h`, sol:`ΔP = 13 600 × 9,81 × ${fmt(h/1000)} = ${fmt(ans*1000)} Pa = <b>${fmt(ans)} kPa</b>`}; }},
+
+ // ---------------- Dynamique des fluides parfaits
+ {c:"c3", l:2, g(){ const Q=rnd(1,50,1), V=rnd(0.8,3,1); const ans=Math.sqrt(4*Q/1000/(Math.PI*V))*1000;
+   return {t:"Dimensionner une conduite", d:`On veut transporter <b>${fmt(Q)} L/s</b> d'eau à une vitesse de <b>${fmt(V)} m/s</b>.`, ask:"Diamètre intérieur nécessaire", unit:"mm", ans,
+   hint:String.raw`Q_V=\frac{\pi D^2}{4}V\Rightarrow D=\sqrt{\frac{4Q_V}{\pi V}}`, sol:`D = √(4 × ${fmt(Q/1000)} / (π × ${fmt(V)})) = ${fmt(ans/1000)} m = <b>${fmt(ans)} mm</b>`}; }},
+ {c:"c3", l:1, g(){ const vol=rnd(5,200,0), Q=rnd(1,30,1); const ans=vol/(Q/1000)/60;
+   return {t:"Temps de remplissage", d:`Une piscine de <b>${vol} m³</b> est remplie avec un débit de <b>${fmt(Q)} L/s</b>.`, ask:"Durée de remplissage", unit:"min", ans,
+   hint:String.raw`t=\frac{\text{Volume}}{Q_V}`, sol:`t = ${vol} / ${fmt(Q/1000)} = ${fmt(ans*60)} s = <b>${fmt(ans)} min</b>`}; }},
+ {c:"c3", l:2, g(){ const d=pick([10,20,30,50]), h=rnd(0.5,6,1); const V=Math.sqrt(2*G*h), S=Math.PI*(d/1000)**2/4, ans=S*V*1000;
+   return {t:"Débit de vidange", d:`Un réservoir ouvert se vide par un orifice de <b>${d} mm</b> situé <b>${fmt(h)} m</b> sous la surface libre (fluide parfait).`, ask:"Débit volumique sortant", unit:"L/s", ans,
+   hint:String.raw`V=\sqrt{2gh},\quad Q_V=S\,V`, sol:`V = ${fmt(V)} m/s ; S = ${fmt(S)} m² → Qv = ${fmt(ans/1000)} m³/s = <b>${fmt(ans)} L/s</b>`}; }},
+ {c:"c3", l:2, g(){ const dP=rnd(0.5,20,1); const ans=Math.sqrt(2*dP*1000/1000);
+   return {t:"Tube de Pitot", d:`Un tube de Pitot placé dans un écoulement d'eau mesure une différence entre pression d'arrêt et pression statique de <b>${fmt(dP)} kPa</b>.`, ask:"Vitesse de l'écoulement", unit:"m/s", ans,
+   hint:String.raw`P_{arr\hat et}=P+\tfrac12\rho V^2\Rightarrow V=\sqrt{\frac{2\,\Delta P}{\rho}}`, sol:`V = √(2 × ${fmt(dP*1000)} / 1000) = <b>${fmt(ans)} m/s</b>`}; }},
+ {c:"c3", l:1, g(){ const V=rnd(3,15,1); const ans=V*V/(2*G);
+   return {t:"Hauteur d'un jet d'eau", d:`Un jet d'eau sort verticalement vers le haut à <b>${fmt(V)} m/s</b> (fluide parfait, sans frottement de l'air).`, ask:"Hauteur maximale atteinte", unit:"m", ans,
+   hint:String.raw`h=\frac{V^2}{2g}`, sol:`h = ${fmt(V)}² / (2 × 9,81) = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c3", l:1, g(){ const z=rnd(0,20,1), P=rnd(0.5,4,1), V=rnd(0.5,4,1); const ans=z+P*1e5/(1000*G)+V*V/(2*G);
+   return {t:"Charge totale", d:`En un point d'une conduite d'eau : altitude <b>z = ${fmt(z)} m</b>, pression relative <b>P = ${fmt(P)} bar</b>, vitesse <b>V = ${fmt(V)} m/s</b>.`, ask:"Charge totale H", unit:"m", ans,
+   hint:String.raw`H=z+\frac{P}{\rho g}+\frac{V^2}{2g}`, sol:`H = ${fmt(z)} + ${fmt(P*1e5/(1000*G))} + ${fmt(V*V/(2*G))} = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c3", l:1, g(){ const z=rnd(0,20,1), P=rnd(0.5,4,1), V=rnd(0.5,4,1); const ans=G*z+P*1e5/1000+V*V/2;
+   return {t:"Énergie massique", d:`Eau en un point : z = <b>${fmt(z)} m</b>, P = <b>${fmt(P)} bar</b> (relative), V = <b>${fmt(V)} m/s</b>.`, ask:"Énergie massique totale e", unit:"J/kg", ans,
+   hint:String.raw`e=gz+\frac{P}{\rho}+\frac{V^2}{2}`, sol:`e = ${fmt(G*z)} + ${fmt(P*100)} + ${fmt(V*V/2)} = <b>${fmt(ans)} J/kg</b>`}; }},
+ {c:"c3", l:2, g(){ const P1=rnd(2,6,1), dz=rnd(3,Math.min(30,(P1-0.3)*10),1); const ans=P1-1000*G*dz/1e5;
+   return {t:"Conduite verticale", d:`De l'eau monte dans une conduite verticale de diamètre constant. En bas, P₁ = <b>${fmt(P1)} bar</b>. Le point 2 est <b>${fmt(dz)} m</b> plus haut (fluide parfait).`, ask:"Pression P₂", unit:"bar", ans,
+   hint:String.raw`D\ \text{constant}\Rightarrow V_1=V_2\Rightarrow P_2=P_1-\rho g(z_2-z_1)`, sol:`P₂ = ${fmt(P1*1e5)} − ${fmt(1000*G*dz)} = ${fmt(ans*1e5)} Pa = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c3", l:3, g(){ const D1=pick([100,150]), D2=pick([40,50,60]), dP=rnd(5,40,1); const r=(D2/D1)**4, V2=Math.sqrt(2*dP*1000/(1000*(1-r))), ans=Math.PI*(D2/1000)**2/4*V2*1000;
+   return {t:"Venturi : mesurer un débit", d:`Un Venturi horizontal (D₁ = <b>${D1} mm</b>, col D₂ = <b>${D2} mm</b>) parcouru par de l'eau présente P₁ − P₂ = <b>${fmt(dP)} kPa</b>.`, ask:"Débit volumique", unit:"L/s", ans,
+   hint:String.raw`P_1-P_2=\tfrac12\rho(V_2^2-V_1^2),\ V_1=V_2\left(\tfrac{D_2}{D_1}\right)^2\Rightarrow V_2=\sqrt{\frac{2\Delta P}{\rho\,(1-(D_2/D_1)^4)}}`, sol:`V₂ = ${fmt(V2)} m/s ; Qv = S₂·V₂ = <b>${fmt(ans)} L/s</b>`}; }},
+ {c:"c3", l:2, g(){ const Q=rnd(0.5,5,1), H=rnd(10,120,0); const ans=1000*G*Q*H/1000;
+   return {t:"Puissance d'une turbine", d:`Une microcentrale turbine <b>${fmt(Q)} m³/s</b> d'eau avec une chute de <b>${H} m</b> (fluide parfait, rendement 100 %).`, ask:"Puissance récupérée", unit:"kW", ans,
+   hint:String.raw`\mathcal P=\rho g\,Q_V\,H`, sol:`𝒫 = 1000 × 9,81 × ${fmt(Q)} × ${H} = ${fmt(ans*1000)} W = <b>${fmt(ans)} kW</b>`}; }},
+ {c:"c3", l:1, g(){ const Q=rnd(1,30,1), dP=rnd(1,10,1); const ans=Q/1000*dP*1e5;
+   return {t:"Puissance d'une pompe (ΔP)", d:`Une pompe augmente la pression de <b>${fmt(dP)} bar</b> pour un débit de <b>${fmt(Q)} L/s</b> (même vitesse et même altitude en entrée et en sortie).`, ask:"Puissance hydraulique", unit:"W", ans,
+   hint:String.raw`\frac{\mathcal P}{Q_V}=\Delta P\Rightarrow\mathcal P=Q_V\,\Delta P`, sol:`𝒫 = ${fmt(Q/1000)} × ${fmt(dP*1e5)} = <b>${fmt(ans)} W</b>`}; }},
+ {c:"c3", l:3, g(){ const Q=rnd(5,40,0), D=pick([50,80,100]); const V=Q/1000/(Math.PI*(D/1000)**2/4), ans=Q*V*Math.SQRT2;
+   return {t:"Euler : coude à 90°", d:`De l'eau (<b>${Q} L/s</b>) traverse un coude à 90° de diamètre constant <b>${D} mm</b>. On néglige les forces de pression et le poids.`, ask:"Norme de la force exercée par le fluide sur le coude", unit:"N", ans,
+   hint:String.raw`\vec F=q_m(\vec V_2-\vec V_1),\quad |\vec V_2-\vec V_1|=V\sqrt2`, sol:`V = ${fmt(V)} m/s ; qm = ${Q} kg/s → F = qm·V·√2 = <b>${fmt(ans)} N</b>`}; }},
+ {c:"c3", l:2, g(){ const Q=rnd(2,30,0), V=rnd(10,50,0); const ans=2*Q*V;
+   return {t:"Euler : auget de turbine Pelton", d:`Un jet d'eau (<b>${Q} L/s</b>, V = <b>${V} m/s</b>) frappe un auget fixe qui le renvoie en sens inverse à la même vitesse.`, ask:"Force exercée sur l'auget", unit:"N", ans,
+   hint:String.raw`F=q_m\,|V_2-V_1|=q_m\,(V-(-V))=2\,q_m V`, sol:`qm = ${Q} kg/s → F = 2 × ${Q} × ${V} = <b>${fmt(ans)} N</b>`}; }},
+
+ // ---------------- Fluides réels & pertes de charge
+ {c:"c4", l:2, g(){ const nu=pick([1e-6,1e-5,5e-5,1e-4]), D=pick([10,20,25,50]); const ans=2000*nu/(D/1000);
+   return {t:"Vitesse limite du laminaire", d:`Un fluide (ν = ${fmt(nu)} m²/s) circule dans un tube de <b>${D} mm</b>.`, ask:"Vitesse maximale pour rester laminaire (Re = 2000)", unit:"m/s", ans,
+   hint:String.raw`Re=\frac{VD}{\nu}=2000\Rightarrow V=\frac{2000\,\nu}{D}`, sol:`V = 2000 × ${fmt(nu)} / ${fmt(D/1000)} = <b>${fmt(ans)} m/s</b>`}; }},
+ {c:"c4", l:1, g(){ const rho=pick([1000,850,900]), mu=pick([1e-3,0.01,0.05,0.1]), V=rnd(0.2,3,1), D=pick([20,50,100]); const ans=rho*V*D/1000/mu;
+   return {t:"Reynolds avec μ", d:`Fluide : ρ = <b>${rho} kg/m³</b>, μ = <b>${fmt(mu)} Pa·s</b>, vitesse <b>${fmt(V)} m/s</b>, tube de <b>${D} mm</b>.`, ask:"Nombre de Reynolds", unit:"—", ans,
+   hint:String.raw`Re=\frac{VD}{\nu}=\frac{\rho V D}{\mu}`, sol:`ν = μ/ρ = ${fmt(mu/rho)} m²/s → Re = <b>${fmt(ans)}</b> (${ans<2000?"laminaire":ans<3000?"transitoire":"turbulent"})`}; }},
+ {c:"c4", l:3, g(){ const n=pick([10,22,32,46,68]), V=rnd(0.5,3,1), D=pick([10,20,25]); const ans=V*D/1000/(n*1e-6);
+   return {t:"Reynolds d'une huile en cSt", d:`Une huile de viscosité <b>${n} cSt</b> s'écoule à <b>${fmt(V)} m/s</b> dans un tube de <b>${D} mm</b>.`, ask:"Nombre de Reynolds", unit:"—", ans,
+   hint:String.raw`1\ \text{cSt}=10^{-6}\ \text{m}^2/\text{s},\quad Re=\frac{VD}{\nu}`, sol:`ν = ${fmt(n*1e-6)} m²/s → Re = <b>${fmt(ans)}</b> (${ans<2000?"laminaire":ans<3000?"transitoire":"turbulent"})`}; }},
+ {c:"c4", l:1, g(){ const dH=rnd(0.5,30,1), rho=pick([1000,850]); const ans=rho*G*dH/1000;
+   return {t:"Perte de charge en pression", d:`Une conduite transportant un liquide (ρ = ${rho} kg/m³) présente une perte de charge de <b>${fmt(dH)} m</b>.`, ask:"Perte de pression correspondante", unit:"kPa", ans,
+   hint:String.raw`\Delta P=\rho g\,\Delta H`, sol:`ΔP = ${rho} × 9,81 × ${fmt(dH)} = ${fmt(ans*1000)} Pa = <b>${fmt(ans)} kPa</b>`}; }},
+ {c:"c4", l:2, g(){ const lam=pick([0.02,0.025,0.03]), L=rnd(20,200,0), D=pick([50,80,100]), V=rnd(1,3,1), K=pick([1.5,2.5,3.8,5]); const hv=V*V/(2*G), ans=(lam*L/(D/1000)+K)*hv;
+   return {t:"Pertes de charge totales", d:`Conduite : L = <b>${L} m</b>, D = <b>${D} mm</b>, λ = <b>${lam}</b>, V = <b>${fmt(V)} m/s</b>. Somme des coefficients singuliers ΣK = <b>${K}</b>.`, ask:"Pertes de charge totales ΔH", unit:"m", ans,
+   hint:String.raw`\Delta H=\left(\lambda\frac{L}{D}+\sum K_i\right)\frac{V^2}{2g}`, sol:`ΔHR = ${fmt(lam*L/(D/1000)*hv)} m ; ΔHS = ${fmt(K*hv)} m → ΔH = <b>${fmt(ans)} m</b>`}; }},
+ {c:"c4", l:2, g(){ const V=rnd(1,4,1), K=pick([0.3,0.5,0.9,1.5,5]); const shown=+(K*V*V/(2*G)).toFixed(3), ans=shown*2*G/(V*V);
+   return {t:"Mesurer un coefficient K", d:`Sur un coude, on mesure une perte de charge singulière de <b>${fmt(shown)} m</b> pour une vitesse de <b>${fmt(V)} m/s</b>.`, ask:"Coefficient K du coude", unit:"—", ans,
+   hint:String.raw`\Delta H_S=K\frac{V^2}{2g}\Rightarrow K=\frac{2g\,\Delta H_S}{V^2}`, sol:`K = 2 × 9,81 × ${fmt(shown)} / ${fmt(V)}² = <b>${fmt(ans)}</b>`}; }},
+ {c:"c4", l:3, g(){ const Q=rnd(5,40,0), dz=rnd(5,40,0), dH=rnd(1,10,1); const ans=1000*G*Q/1000*(dz+dH);
+   return {t:"Pompe avec pertes de charge", d:`Une pompe élève <b>${Q} L/s</b> d'eau entre deux bassins ouverts séparés de <b>${dz} m</b> de dénivelé. Les pertes de charge totales du circuit valent <b>${fmt(dH)} m</b>.`, ask:"Puissance hydraulique de la pompe", unit:"W", ans,
+   hint:String.raw`\mathcal P=\rho g\,Q_V\,(\Delta z+\Delta H)`, sol:`Hauteur à fournir = ${dz} + ${fmt(dH)} = ${fmt(dz+dH)} m → 𝒫 = <b>${fmt(ans)} W</b>`}; }},
+ {c:"c4", l:3, g(){ const P1=rnd(3,8,1), dz=rnd(-5,10,1), dH=rnd(1,15,1); const ans=P1-1000*G*(dz+dH)/1e5;
+   return {t:"Bernoulli généralisé : pression aval", d:`Eau dans une conduite de diamètre constant. En 1 : P₁ = <b>${fmt(P1)} bar</b>. Le point 2 est <b>${fmt(Math.abs(dz))} m ${dz>=0?"plus haut":"plus bas"}</b>. Pertes de charge entre 1 et 2 : <b>${fmt(dH)} m</b>.`, ask:"Pression P₂", unit:"bar", ans,
+   hint:String.raw`\frac{P_1}{\rho g}+z_1=\frac{P_2}{\rho g}+z_2+\Delta H_{1,2}\quad(V_1=V_2)`, sol:`P₂ = P₁ − ρg[(z₂ − z₁) + ΔH] = ${fmt(P1*1e5)} − ${fmt(1000*G*(dz+dH))} = <b>${fmt(ans)} bar</b>`}; }},
+ {c:"c4", l:3, g(){ const lam=pick([0.018,0.022,0.028,0.035]), L=rnd(20,150,0), D=pick([40,50,80]), V=rnd(1,3,1); const dH=+(lam*L/(D/1000)*V*V/(2*G)).toFixed(3), ans=dH*(D/1000)*2*G/(L*V*V);
+   return {t:"Déterminer λ expérimentalement", d:`Sur <b>${L} m</b> de conduite (D = <b>${D} mm</b>), à <b>${fmt(V)} m/s</b>, on mesure une perte de charge régulière de <b>${fmt(dH)} m</b>.`, ask:"Coefficient λ", unit:"—", ans,
+   hint:String.raw`\lambda=\frac{2g\,D\,\Delta H_R}{L\,V^2}`, sol:`λ = 2 × 9,81 × ${fmt(D/1000)} × ${fmt(dH)} / (${L} × ${fmt(V)}²) = <b>${fmt(ans)}</b>`}; }},
+ {c:"c4", l:3, g(){ const nu=pick([1e-5,5e-5,1e-4]), D=pick([10,20,25,40]); const V=2000*nu/(D/1000), ans=Math.PI*(D/1000)**2/4*V*1000*60;
+   return {t:"Débit maximal en laminaire", d:`Une huile (ν = ${fmt(nu)} m²/s) circule dans un tube de <b>${D} mm</b>.`, ask:"Débit maximal pour rester laminaire (Re = 2000)", unit:"L/min", ans,
+   hint:String.raw`V_{max}=\frac{2000\,\nu}{D},\quad Q_V=\frac{\pi D^2}{4}V_{max}`, sol:`V_max = ${fmt(V)} m/s → Qv = ${fmt(ans/60000)} m³/s = <b>${fmt(ans)} L/min</b>`}; }},
+ {c:"c4", l:3, g(){ const V=rnd(0.3,1,2), D=pick([10,15,20]), L=rnd(5,30,0), rho=880, nu=1e-4; const Re=V*D/1000/nu, lam=64/Re, dH=lam*L/(D/1000)*V*V/(2*G), ans=rho*G*dH/1000;
+   return {t:"Chute de pression d'une huile (laminaire)", d:`Huile (ρ = 880 kg/m³, ν = 10⁻⁴ m²/s) à <b>${fmt(V)} m/s</b> dans <b>${L} m</b> de tube de <b>${D} mm</b>.`, ask:"Chute de pression due aux pertes régulières", unit:"kPa", ans,
+   hint:String.raw`Re=\frac{VD}{\nu},\ \lambda=\frac{64}{Re},\ \Delta H_R=\lambda\frac{L}{D}\frac{V^2}{2g},\ \Delta P=\rho g\,\Delta H_R`, sol:`Re = ${fmt(Re)} → λ = ${fmt(lam)} → ΔHR = ${fmt(dH)} m → ΔP = <b>${fmt(ans)} kPa</b>`}; }}
+];
+
+// niveau par défaut des anciens exercices (★ facile, ★★ multi-étapes)
+EX.forEach(e=>{ if(!e.l){ const t=e.g().t; e.l=/Venturi|Euler|laminaire|généralisé|pompe|Compressibilité|Manomètre|Flottaison/.test(t)?2:1; } });
+
+let ev=[], ei=0, escore=0;
+function startEval(){
+  const ch=$("#evalChap").value, lv=$("#evalLvl").value, N=+$("#evalN").value;
+  const pool=shuffle(EX.filter(e=>(ch==="all"||e.c===ch)&&(lv==="all"||e.l===+lv)));
+  if(!pool.length){ ev=[]; $("#evalBar").style.width="0"; $("#evalBox").innerHTML="<p>Aucun exercice pour ce chapitre à ce niveau : change de filtre.</p>"; return; }
+  ev=[]; while(ev.length<N) ev.push(pool[ev.length%pool.length]);
+  ev=ev.map(e=>({...e.g(), c:e.c, l:e.l}));
+  ei=0; escore=0; showEval();
+}
+function showEval(){
+  $("#evalBar").style.width=(ei/ev.length*100)+"%";
+  if(ei>=ev.length){
+    const note=Math.round(escore/ev.length*200)/10;
+    let best=store.get("mf-best",null); if(best===null||note>best){ best=note; store.set("mf-best",best); }
+    const h=store.get("mf-hist",[]); h.push({d:Date.now(), note, n:ev.length, ch:$("#evalChap").value}); store.set("mf-hist",h.slice(-30));
+    $("#evalBox").innerHTML = `<div class="score">${String(note).replace(".",",")} / 20</div><p style="text-align:center">${String(escore).replace(".",",")} point(s) sur ${ev.length} · Meilleure note : ${String(best).replace(".",",")} / 20</p><div class="row"><button class="btn primary" onclick="startEval()">Nouvelle évaluation</button></div>`;
+    return;
+  }
+  const e=ev[ei]; let tries=0, hinted=false;
+  const hintHTML = e.hintHTML || tex(e.hint);
+  const u = e.unit!=="—" ? e.unit : "";
+  $("#evalBox").innerHTML = `<div class="stats">Exercice ${ei+1} / ${ev.length} · ${CHAPS[e.c]} · <span class="stars">${"★".repeat(e.l)}${"☆".repeat(3-e.l)}</span></div>
+    <h2 style="margin:6px 0">${e.t}</h2><div class="data">${e.d}</div>
+    <p><b>Calcule : ${e.ask}</b> ${u?"(en "+u+")":""}</p>
+    <div class="answer"><input id="ans" inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span>${u}</span>
+      <button class="btn primary" id="check">Valider</button><button class="btn" id="hintBtn">💡 Indice</button><button class="btn" id="skipBtn">Je sèche</button></div>
+    <div class="formhint" id="fh">Formule à utiliser : ${hintHTML}</div>
+    <div class="feedback" id="efb"></div>`;
+  $("#ans").focus();
+  $("#hintBtn").onclick=()=>{ hinted=true; $("#fh").style.display="block"; };
+  const finish=good=>{
+    if(good) escore += hinted||tries>0 ? 0.5 : 1;
+    const fb=$("#efb"); fb.className="feedback "+(good?"good":"bad");
+    fb.innerHTML=`<b>${good?(tries>0||hinted?"Correct (demi-point : indice ou 2ᵉ essai)":"Correct !"):"Raté."}</b> Réponse attendue : <b>${fmt(e.ans)} ${u}</b><div style="margin-top:8px">${hintHTML}</div><div>${e.sol}</div><div class="row"><button class="btn primary" id="enext">Suivant →</button></div>`;
+    ["#check","#ans","#hintBtn","#skipBtn"].forEach(s=>$(s).disabled=true);
+    $("#fh").style.display="none";
+    $("#enext").onclick=()=>{ei++;showEval();}; $("#enext").focus();
+  };
+  const check=()=>{
+    const v=parseNum($("#ans").value);
+    if(isNaN(v)){ const fb=$("#efb"); fb.className="feedback bad"; fb.innerHTML="Je n'arrive pas à lire ce nombre. Exemples : 12,5 · 3,2e-4 · 3,2×10^-4"; return; }
+    if(Math.abs(v-e.ans)<=Math.abs(e.ans)*0.02) return finish(true);
+    if(tries>=1) return finish(false);
+    tries++;
+    const fb=$("#efb"); fb.className="feedback bad"; fb.innerHTML=`Pas tout à fait (${fmt(v)}). Vérifie tes unités et réessaie : dernier essai !`;
+  };
+  $("#check").onclick=check;
+  $("#skipBtn").onclick=()=>finish(false);
+  $("#ans").onkeydown=k=>{ if(k.key==="Enter") check(); };
+}
+$("#evalStart").onclick=startEval;
+startEval();
+
+// ------------------------------------------------------------------ CONVERSIONS
+let cq=null, cOk=0, cTot=0, cStreak=0;
+$("#convCat").innerHTML=`<option value="all">Toutes les grandeurs</option>`+Object.entries(CONV).map(([k,v])=>`<option value="${k}"${k==="stokes"?" selected":""}>${v.n}</option>`).join("");
+function convStats(){ $("#convStats").textContent=`Session : ${cOk} / ${cTot} · Série en cours : ${cStreak} 🔥 · Record de série : ${store.get("mf-convbest",0)}`; }
+function newConv(){
+  cq=convQ($("#convCat").value); let tries=0;
+  $("#convBox").innerHTML=`<div class="stats">${CONV[cq.cat].n}</div>
+    <div class="bigq">${fmt(cq.v)} ${cq.from} = <span style="color:var(--accent)">?</span> ${cq.to}</div>
+    <div class="answer" style="justify-content:center"><input id="cin" inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span>${cq.to}</span>
+      <button class="btn primary" id="cchk">Valider</button><button class="btn" id="ctip">💡 Rappel</button><button class="btn" id="cskip">Je sèche</button></div>
+    <div class="formhint" id="ctipbox">${cq.tip}</div>
+    <div class="feedback" id="cfb"></div>`;
+  $("#cin").focus();
+  $("#ctip").onclick=()=>$("#ctipbox").style.display="block";
+  const finish=good=>{
+    cTot++;
+    if(good){ cOk++; cStreak++; store.set("mf-convtot",store.get("mf-convtot",0)+1); if(cStreak>store.get("mf-convbest",0)) store.set("mf-convbest",cStreak); } else cStreak=0;
+    const fb=$("#cfb"); fb.className="feedback "+(good?"good":"bad");
+    fb.innerHTML=`<b>${good?"Correct !":"Raté."}</b><div style="margin-top:6px">1 ${cq.from} = ${sci(cq.k)} ${cq.to}<br>${fmt(cq.v)} ${cq.from} = ${fmt(cq.v)} × ${sci(cq.k)} = <b>${fmt(cq.ans)} ${cq.to}</b></div><div class="note">${cq.tip}</div><div class="row"><button class="btn primary" id="cnext">Suivante →</button></div>`;
+    ["#cin","#cchk","#ctip","#cskip"].forEach(s=>$(s).disabled=true);
+    $("#cnext").onclick=newConv; $("#cnext").focus(); convStats();
+  };
+  const check=()=>{
+    const v=parseNum($("#cin").value);
+    if(isNaN(v)){ const fb=$("#cfb"); fb.className="feedback bad"; fb.innerHTML="Je n'arrive pas à lire ce nombre. Exemples : 0,25 · 2,5e-6 · 2,5×10^-6"; return; }
+    if(Math.abs(v-cq.ans)<=Math.abs(cq.ans)*0.01) return finish(true);
+    if(tries>=1) return finish(false);
+    tries++;
+    const ratio=v/cq.ans, k=Math.round(Math.log10(Math.abs(ratio)));
+    const fb=$("#cfb"); fb.className="feedback bad";
+    fb.innerHTML = (Math.abs(Math.log10(Math.abs(ratio))-k)<0.01 && k!==0) ? `Le chiffre est bon mais tu es décalé d'un facteur 10${sup(k)} : vérifie la puissance de 10. Dernier essai !` : `Pas tout à fait (${fmt(v)}). Dernier essai !`;
+  };
+  $("#cchk").onclick=check;
+  $("#cskip").onclick=()=>finish(false);
+  $("#cin").onkeydown=k=>{ if(k.key==="Enter") check(); };
+  convStats();
+}
+$("#convNew").onclick=newConv; $("#convCat").onchange=newConv;
+$("#convTable").innerHTML=Object.values(CONV).map(C=>{
+  const base=C.u.find(u=>u[1]===1)[0];
+  return `<h4 style="margin:16px 0 4px">${C.n}</h4><div class="tablewrap"><table class="conv"><tr><th>Unité</th><th>Valeur en ${base}</th></tr>${C.u.filter(u=>u[0]!==base).map(u=>`<tr><td>1 ${u[0]}</td><td>${sci(u[1])} ${base}</td></tr>`).join("")}</table></div><p class="note">${C.tip}</p>`;
+}).join("");
+
+// ------------------------------------------------------------------ DÉFI CHRONO
+let chT=null, chEnd=0, chOn=false, chScore=0, chTot=0, chStreak=0, chBestStreak=0, chPool=[], chIdx=0;
+function startChrono(){
+  chPool=shuffle(factories("mix",$("#chronoChap").value)); if(!chPool.length) return;
+  chIdx=0; chScore=0; chTot=0; chStreak=0; chBestStreak=0; chOn=true;
+  chEnd=Date.now()+(+$("#chronoDur").value)*1000;
+  clearInterval(chT); chT=setInterval(tickChrono,200); tickChrono(); nextChrono();
+}
+function tickChrono(){
+  const left=Math.max(0,(chEnd-Date.now())/1000);
+  $("#chronoTimer").textContent=`⏱ ${Math.ceil(left)} s · Score : ${chScore}`+(chStreak>1?` · 🔥 ${chStreak}`:"");
+  $("#chronoTimer").classList.toggle("low",left<10);
+  if(left<=0) endChrono();
+}
+function nextChrono(){
+  if(!chOn) return;
+  if(chIdx>=chPool.length){ chPool=shuffle(chPool); chIdx=0; }
+  const q=chPool[chIdx++](), box=$("#chronoBox");
+  box.classList.remove("flashok","flashko");
+  renderChoiceQ(box, q, `${CHAPS[q.c]} · ${q.kind}`, good=>{
+    if(!chOn) return;
+    chTot++;
+    if(good){ chScore++; chStreak++; chBestStreak=Math.max(chBestStreak,chStreak); } else chStreak=0;
+    void box.offsetWidth; box.classList.add(good?"flashok":"flashko");
+    tickChrono();
+    setTimeout(nextChrono, good?350:1300);
+  });
+}
+function endChrono(){
+  if(!chOn) return; chOn=false; clearInterval(chT);
+  const rec=store.get("mf-chrono",0), isRec=chScore>rec; if(isRec) store.set("mf-chrono",chScore);
+  $("#chronoTimer").textContent="⏱ Terminé !";
+  $("#chronoBox").innerHTML=`<div class="score">${chScore} bonne${chScore>1?"s":""} réponse${chScore>1?"s":""}</div>
+    <p style="text-align:center">${chTot} questions · précision ${chTot?Math.round(chScore/chTot*100):0} % · meilleure série ${chBestStreak}<br>${isRec?"🏆 Nouveau record !":"Record : "+rec}</p>
+    <div class="row"><button class="btn primary" onclick="startChrono()">Rejouer</button></div>`;
+}
+$("#chronoStart").onclick=startChrono;
+
+// ------------------------------------------------------------------ FICHE
+function renderSheet(){
+  $("#sheetList").innerHTML = Object.entries(CHAPS).map(([k,v])=>`<h3>${v}</h3>`+
+    CARDS.filter(c=>c.c===k).map(c=>`<div class="item"><span class="lvl">${know[c.id]===true?"✓ sue":know[c.id]===false?"à revoir":""}</span><b>${c.q}</b>${tex(c.f)}${c.n?`<div class="note">${c.n}</div>`:""}</div>`).join("")).join("");
+}
+renderSheet();
+
+// ------------------------------------------------------------------ PROGRÈS
+function renderProg(){
+  const h=store.get("mf-hist",[]), qh=store.get("mf-qhist",[]), best=store.get("mf-best",null);
+  const avg=h.length?Math.round(h.reduce((s,x)=>s+x.note,0)/h.length*10)/10:null;
+  const known=CARDS.filter(c=>know[c.id]===true).length;
+  const date=t=>new Date(t).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"})+" "+new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  const num=x=>x===null?"—":String(x).replace(".",",");
+  $("#progBox").innerHTML=`<div class="grid2" style="margin-top:16px">
+      <div class="kpi"><b>${known} / ${CARDS.length}</b>flashcards sues</div>
+      <div class="kpi"><b>${num(best)}</b>meilleure note /20</div>
+      <div class="kpi"><b>${num(avg)}</b>moyenne des évaluations</div>
+      <div class="kpi"><b>${store.get("mf-chrono",0)}</b>record défi chrono</div>
+      <div class="kpi"><b>${store.get("mf-convtot",0)}</b>conversions réussies</div>
+      <div class="kpi"><b>${store.get("mf-convbest",0)}</b>meilleure série de conversions</div>
+    </div>
+    <h3>Flashcards par chapitre</h3>
+    ${Object.entries(CHAPS).map(([k,v])=>{ const cs=CARDS.filter(c=>c.c===k), n=cs.filter(c=>know[c.id]===true).length, r=cs.filter(c=>know[c.id]===false).length;
+      return `<div class="pline"><span>${v}</span><span>${n} / ${cs.length}${r?` · ${r} à revoir`:""}</span></div><div class="progress"><div style="width:${n/cs.length*100}%"></div></div>`; }).join("")}
+    <h3>Dernières évaluations</h3>
+    ${h.length?h.slice(-10).reverse().map(x=>`<div class="hist"><span>${date(x.d)} · ${x.ch==="all"?"Tous chapitres":CHAPS[x.ch]} · ${x.n} exos</span><b>${num(x.note)} / 20</b></div>`).join(""):"<p class='stats'>Aucune évaluation pour l'instant.</p>"}
+    <h3>Derniers QCM</h3>
+    ${qh.length?qh.slice(-10).reverse().map(x=>`<div class="hist"><span>${date(x.d)} · ${x.t}</span><b>${x.s} / ${x.n}</b></div>`).join(""):"<p class='stats'>Aucun QCM pour l'instant.</p>"}
+    <div class="row" style="margin-top:24px"><button class="btn ko" id="resetAll">Réinitialiser ma progression</button></div>`;
+  $("#resetAll").onclick=()=>{
+    if(!confirm("Effacer toute ta progression ?")) return;
+    ["mf-know","mf-best","mf-hist","mf-qhist","mf-chrono","mf-convtot","mf-convbest"].forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+    know={}; buildDeck(false); renderProg();
+  };
+}
+
+</script>
+</body>
+</html>

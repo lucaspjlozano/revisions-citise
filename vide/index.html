@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Fiche Techniques du vide</title>
+<style>
+@page { size: A4; margin: 5mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #fff; color: #000; }
+body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 7.6pt; line-height: 1.18; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 200mm; height: 286.5mm; overflow: hidden; page-break-after: always; break-after: page; display: flex; flex-direction: column; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+.top { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: .6mm; margin-bottom: 1.2mm; }
+.top h1 { font-size: 12pt; letter-spacing: .4px; }
+.top .s { font-size: 6.8pt; color: #333; }
+.cols { column-count: 2; column-gap: 3.5mm; column-rule: .5px solid #999; column-fill: auto; flex: 1 1 0; min-height: 0; }
+h2 { background: #000; color: #fff; font-size: 8.4pt; padding: .45mm 1.6mm; margin: 1.1mm 0 .6mm; break-after: avoid; letter-spacing: .3px; }
+h2:first-child { margin-top: 0; }
+h2 small { font-weight: normal; font-size: 6.5pt; opacity: .85; }
+.it { display: grid; grid-template-columns: 25mm 1fr; gap: 1.4mm; align-items: center; padding: .45mm 0; border-bottom: .5px dotted #999; break-inside: avoid; }
+.w { display: block; background: #dcdcdc; font-size: 6.6pt; line-height: 1.12; padding: .4mm 1mm; border-left: 2.2px solid #000; font-weight: bold; color: #111; }
+.fx { font-size: 7.9pt; }
+.k { display: inline-block; border: 1.6px solid #000; padding: 0 1.2mm; font-weight: bold; font-size: 8.8pt; margin: .2mm 0; }
+.b { display: inline-block; border: .7px solid #000; padding: 0 1mm; }
+.u { font-size: 6.8pt; color: #222; }
+.f { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .88em; line-height: 1.02; margin: 0 1px; }
+.f > span:first-child { border-bottom: .7px solid #000; padding: 0 1.5px; }
+.sq { border-top: .7px solid #000; padding: 0 1px; }
+sub, sup { font-size: .72em; line-height: 0; }
+.warn { border: 1.1px dashed #000; padding: .7mm 1.2mm; margin: .8mm 0; break-inside: avoid; }
+.warn b.t { font-size: 8pt; }
+.note { font-size: 7pt; margin: .3mm 0; }
+ul { padding-left: 3mm; }
+li { margin: .1mm 0; }
+table { border-collapse: collapse; width: 100%; font-size: 6.8pt; line-height: 1.1; break-inside: avoid; margin: .5mm 0; }
+th, td { border: .5px solid #000; padding: .15mm .6mm; text-align: left; vertical-align: top; }
+th { background: #d0d0d0; }
+td.c, th.c { text-align: center; }
+.ex { border: 1.2px solid #000; margin: 0 0 1mm; break-inside: avoid; }
+.ex .h { background: #000; color: #fff; font-weight: bold; padding: .35mm 1.3mm; font-size: 8.7pt; }
+.ex .h span { font-weight: normal; font-size: 7pt; }
+.ex .si { background: #e2e2e2; padding: .3mm 1.3mm; font-size: 7.5pt; font-style: italic; border-bottom: .5px solid #000; }
+.ex ol { padding: .4mm 1.3mm .4mm 4.8mm; font-size: 8.1pt; }
+.ex ol li { margin: .1mm 0; }
+.ex .r { border-top: .5px solid #000; padding: .3mm 1.3mm; font-size: 8.1pt; background: #eee; }
+.verso .warn li, .verso .note { font-size: 7.8pt; }
+.verso table { font-size: 7.4pt; }
+.verso .warn b.t { font-size: 8.6pt; }
+
+/* Feuille 1 : cours, texte agrandi */
+.cours { font-size: 8.4pt; }
+.cours .it { grid-template-columns: 27mm 1fr; padding: .6mm 0; }
+.cours .w { font-size: 7.3pt; }
+.cours .fx { font-size: 8.7pt; }
+.cours .k { font-size: 9.6pt; }
+.cours .u { font-size: 7.4pt; }
+.cours table { font-size: 7.5pt; }
+.cours .note, .cours .warn li { font-size: 7.8pt; }
+.cours h2 { font-size: 9.4pt; margin-top: 1.6mm; }
+.cours .warn b.t { font-size: 8.8pt; }
+/* Feuille 2 : exercices */
+.exo .ex { margin-bottom: 1.4mm; }
+.exo .ex .h { font-size: 9pt; padding: .45mm 1.5mm; }
+.exo .en { background: #e8e8e8; border-bottom: .6px solid #000; padding: .6mm 1.5mm; font-size: 8.1pt; font-style: italic; }
+.exo .sub { font-weight: bold; font-size: 8pt; padding: .4mm 1.5mm 0; text-decoration: underline; }
+.exo .q { margin: .6mm 1.2mm 0; padding: .3mm 1.2mm; border-left: 2.4px solid #000; background: #f1f1f1; font-size: 8.2pt; font-weight: bold; }
+.exo .q::before { content: "Q "; font-weight: 900; }
+.exo .a { padding: .35mm 1.5mm .6mm 5mm; font-size: 8.5pt; text-indent: -3.4mm; }
+.exo .a::before { content: "➜ "; font-weight: bold; }
+.exo table.it3 { width: calc(100% - 3mm); margin: .4mm 1.5mm; font-size: 7.4pt; }
+.exo table.it3 td, .exo table.it3 th { white-space: nowrap; padding: .2mm .7mm; }
+</style>
+</head>
+<body>
+<!-- ========== PAGE 1 : COURS 1/2 ========== -->
+<section class="page cours">
+  <div class="top"><h1>FEUILLE 1 · COURS (1/2)</h1><span class="s">Techniques du vide · case grise = QUAND utiliser la formule</span></div>
+  <div class="cols">
+
+  <h2>① BASES, UNITÉS, DOMAINES <small>(ch. 1)</small></h2>
+  <div class="it"><span class="w">Convertir une pression</span> <span class="fx">1 bar = 10<sup>5</sup> Pa · <b>1 mbar = 100 Pa</b> · <b>1 Torr = 133 Pa</b><br>P<sub>atm</sub> = 101 325 Pa = 1013 hPa = 760 Torr = 760 mmHg</span></div>
+  <div class="it"><span class="w">Nommer le domaine / le régime</span> <span class="fx"><b>Grossier</b> 10<sup>5</sup>→10<sup>2</sup> Pa · écoulement visqueux<br><b>Primaire</b> 10<sup>2</sup>→10<sup>−1</sup> Pa · intermédiaire<br><b>Secondaire</b> 10<sup>−1</sup>→10<sup>−5</sup> Pa · moléculaire<br><b>Ultra-vide</b> &lt; 10<sup>−5</sup> Pa · moléculaire</span></div>
+  <div class="it"><span class="w">Gaz parfait, en moles</span> <span class="fx"><span class="b">PV = N R T</span> &nbsp;N* = N·N<sub>a</sub> (nb de molécules)<br><span class="u">R = 8,314 J·mol⁻¹·K⁻¹ · N<sub>a</sub> = 6,022·10<sup>23</sup> mol⁻¹</span></span></div>
+  <div class="it"><span class="w">Densité de molécules n à partir de P et T (LA formule n°1)</span> <span class="fx"><span class="k">P = n k T</span> &nbsp;n = <span class="f"><span>N*</span><span>V</span></span> (m⁻³)<br><span class="u">k = R/N<sub>a</sub> = 1,38·10⁻²³ J·K⁻¹ · P en Pa, T en K</span></span></div>
+  <div class="it"><span class="w">Masse d'une molécule / masse de gaz</span> <span class="fx">m = <span class="f"><span>M</span><span>N<sub>a</sub></span></span> (kg) &nbsp;·&nbsp; <span class="b">G = m·N* = <span class="f"><span>M·n·V</span><span>N<sub>a</sub></span></span> = <span class="f"><span>PVM</span><span>RT</span></span></span></span></div>
+  <div class="it"><span class="w">Mélange de gaz</span> <span class="fx">P = Σ P<sub>i</sub> &nbsp;avec P<sub>i</sub> = n<sub>i</sub> k T = <span class="f"><span>m<sub>i</sub></span><span>M<sub>i</sub></span></span><span class="f"><span>RT</span><span>V</span></span><br><span class="u">P<sub>i</sub> = pression du gaz i seul dans l'enceinte. Pour baisser P : ↓ n ou ↓ T (cryogénie)</span></span></div>
+
+  <h2>② THÉORIE CINÉTIQUE DES GAZ <small>(ch. 2)</small></h2>
+  <div class="it"><span class="w">Distribution de Maxwell-Boltzmann</span> <span class="fx">dn = n f(v) dv, &nbsp;∫f dv = 1 · f(v) = 4πv²<span class="f"><span>m</span><span>2πkT</span></span><sup>3/2</sup>e<sup>−mv²/2kT</sup></span></div>
+  <div class="it"><span class="w">Fraction de molécules plus lentes que v₀ (lire la courbe y(x))</span> <span class="fx">x = v/v<sub>p</sub> · φ(x) = <span class="f"><span>4</span><span>√π</span></span>x²e<sup>−x²</sup> · <span class="b">y(x₀) = n₀/n</span><br><span class="u">Énergie E ↔ x : <b>x² = E/(kT)</b>. Entre x₁ et x₂ : Δn = n·[y(x₂) − y(x₁)]</span></span></div>
+  <div class="it"><span class="w">Vitesse la plus probable</span> <span class="fx"><span class="k">v<sub>p</sub> = √<span class="sq"><span class="f"><span>2kT</span><span>m</span></span></span> = √<span class="sq"><span class="f"><span>2RT</span><span>M</span></span></span></span> = 1,289·10² √(T/M)</span></div>
+  <div class="it"><span class="w">Vitesse moyenne (chocs, flux, λ)</span> <span class="fx"><span class="k">v̄ = √<span class="sq"><span class="f"><span>8kT</span><span>πm</span></span></span></span> = 1,128 v<sub>p</sub> = 1,455·10² √(T/M)</span></div>
+  <div class="it"><span class="w">Vitesse quadratique (énergie)</span> <span class="fx"><span class="k">c = √<span class="sq"><span class="f"><span>3kT</span><span>m</span></span></span></span> = 1,224 v<sub>p</sub> = 1,579·10² √(T/M)<br><span class="u">formules « ·10² » : T en K, <b>M en g/mol</b> → v en m/s · v<sub>p</sub> &lt; v̄ &lt; c</span></span></div>
+  <div class="it"><span class="w">Énergie cinétique moyenne ; T pour atteindre une énergie E</span> <span class="fx"><span class="k">ē<sub>c</sub> = ½ m c² = <span class="f"><span>3</span><span>2</span></span>kT</span> &nbsp;⇒ T = <span class="f"><span>2E</span><span>3k</span></span><br><span class="u">ne dépend que de T · 1 eV = 1,6·10⁻¹⁹ J · tension pour accélérer un e⁻ : U = E/e (V)</span></span></div>
+  <div class="it"><span class="w">Libre parcours moyen λ (distance entre 2 chocs)</span> <span class="fx"><span class="k">λ = <span class="f"><span>1</span><span>π√2 n σ²</span></span> = <span class="f"><span>kT</span><span>π√2 σ² P</span></span></span><br><span class="u">σ = <b>diamètre</b> cinétique (m). Air 20 °C : <b>λ·P ≈ 6,5·10⁻³ Pa·m</b> (λ ≈ 6,5 mm à 1 Pa)</span></span></div>
+  <div class="it"><span class="w">Fréquence de chocs d'1 molécule, temps de vol</span> <span class="fx"><span class="b">Z = π√2 n σ² v̄</span> (chocs/s) · λ = v̄/Z · τ = 1/Z = λ/v̄</span></div>
+  <div class="it"><span class="w">Chocs sur une paroi (surfacique) / entre molécules (volumique)</span> <span class="fx"><span class="k">Z<sub>s</sub> = ¼ n v̄</span> (m⁻²s⁻¹) &nbsp; <span class="b">Z<sub>v</sub> = <span class="f"><span>n Z</span><span>2</span></span></span> (m⁻³s⁻¹)<br><span class="u">nb de chocs sur une surface A par seconde = Z<sub>s</sub>·A</span></span></div>
+  <div class="it"><span class="w">Lien pression / vitesses</span> <span class="fx">P = ⅓ m n c² = ⅔ n ē<sub>c</sub> = ⅓ ρ c² &nbsp;<span class="u">(v̄<sub>z</sub>² = c²/3, vitesses isotropes)</span></span></div>
+
+  <h2>③ DÉBITS, FLUX, CONDUCTANCE <small>(ch. 3)</small></h2>
+  <div class="it"><span class="w">Débit-volume (m³/s, L/s, m³/h)</span> <span class="fx"><span class="b">S = (dV/dt)</span> pompe, à P₂ · <span class="k">S* = (dV/dt)</span> sortie d'enceinte, à P₁<br><span class="u">S* = débit <b>effectif</b> (TRÈS IMPORTANT) · q<sub>v</sub> <b>non</b> conservatif · m³/h ÷ 3,6 = L/s</span></span></div>
+  <div class="it"><span class="w">Débit massique</span> <span class="fx">q<sub>m</sub> = G/t &nbsp;(G = PVM/RT) · <b>conservatif</b> · kg/h, g/s</span></div>
+  <div class="it"><span class="w">Flux gazeux = débit pV (quantité de gaz pompée)</span> <span class="fx"><span class="k">q<sub>pV</sub> = <span class="f"><span>pV</span><span>t</span></span> = P·S</span> · Pa·m³/s ou mbar·L/s<br><span class="u">1 mbar·L/s = 0,1 Pa·m³/s · injection : q<sub>pV</sub> = ΔP·V/t</span></span></div>
+  <div class="it"><span class="w">Relier P et débits en 2 points (continuité)</span> <span class="fx"><span class="k">P₁ S* = P<sub>i</sub> S<sub>i</sub> = P₂ S</span><br><span class="u">⚠ P₂S = puissance d'admission ≠ S (vitesse de pompage)</span></span></div>
+  <div class="it"><span class="w">Conductance d'une canalisation</span> <span class="fx"><span class="k">C = <span class="f"><span>q<sub>pV</sub></span><span>P₁ − P₂</span></span></span> (L/s) · R = 1/C · P₁ &gt; P₂</span></div>
+  <div class="it"><span class="w">Associer des conductances (analogie électrique)</span> <span class="fx">Parallèle : <span class="b">C = Σ C<sub>i</sub></span> &nbsp; Série : <span class="b"><span class="f"><span>1</span><span>C</span></span> = Σ <span class="f"><span>1</span><span>C<sub>i</sub></span></span></span></span></div>
+  <div class="it"><span class="w">Pompe + canalisation → débit effectif à l'enceinte</span> <span class="fx"><span class="k"><span class="f"><span>1</span><span>S*</span></span> = <span class="f"><span>1</span><span>S</span></span> + <span class="f"><span>1</span><span>C</span></span></span> &nbsp;⇔ S* = <span class="f"><span>S·C</span><span>S + C</span></span><br><span class="u">S* &lt; S et S* &lt; C toujours · C ≫ S ⇒ S* ≈ S · C ≪ S ⇒ S* ≈ C (limité par le tuyau)</span></span></div>
+
+  <h2>④ RÉGIMES D'ÉCOULEMENT &amp; CALCUL DE C <small>(ch. 3)</small></h2>
+  <div class="it"><span class="w">Turbulent ou laminaire (début de pompage)</span> <span class="fx">Re = <span class="f"><span>u φ ρ</span><span>η</span></span> · Re &gt; 2200 turbulent · Re &lt; 1200 laminaire<br><span class="u">u vitesse, φ diamètre, ρ masse vol., η viscosité (Pa·s). Turbulent : très bref en vide</span></span></div>
+  <div class="it"><span class="w">Choisir la formule de C (toujours le faire AVANT)</span> <span class="fx"><span class="k">Kn = φ / λ</span> &nbsp;<span class="u">(φ diamètre tuyau, λ calculé à P̄)</span></span></div>
+  <table>
+    <tr><th>Régime</th><th class="c">Kn = φ/λ</th><th class="c">P̄·φ (mbar·cm)</th><th>Domaine</th></tr>
+    <tr><td><b>Visqueux / laminaire</b></td><td class="c">λ &lt; φ/100 → Kn &gt; 100</td><td class="c">&gt; 6·10⁻¹</td><td>10⁵ → 100 Pa</td></tr>
+    <tr><td><b>Intermédiaire</b></td><td class="c">2 &lt; Kn &lt; 100</td><td class="c">1,3·10⁻² → 6·10⁻¹</td><td>100 → 10⁻¹ Pa</td></tr>
+    <tr><td><b>Moléculaire</b></td><td class="c">λ &gt; φ/2 → Kn &lt; 2</td><td class="c">&lt; 1,3·10⁻²</td><td>&lt; 10⁻¹ Pa</td></tr>
+  </table>
+  <div class="it"><span class="w">Tube cylindrique, régime <b>laminaire</b></span> <span class="fx"><span class="k">C<sub>lam</sub> = 135 <span class="f"><span>φ⁴</span><span>l</span></span> P̄</span> &nbsp;P̄ = <span class="f"><span>P₁ + P₂</span><span>2</span></span><br><span class="u"><b>C en L/s · φ, l en cm · P̄ en mbar</b> · dépend de P</span></span></div>
+  <div class="it"><span class="w">Tube cylindrique, régime <b>moléculaire</b></span> <span class="fx"><span class="k">C<sub>mol</sub> = 12,1 α <span class="f"><span>φ³</span><span>l</span></span></span> &nbsp; α = <span class="f"><span>1</span><span>1 + 1,33 φ/l</span></span><br><span class="u">α = facteur de Clausing · <b>indépendant de P</b> · C en L/s, cm</span></span></div>
+  <div class="it"><span class="w">Régime <b>intermédiaire</b> (Knudsen, air 20 °C)</span> <span class="fx"><span class="b">C<sub>int</sub> = C<sub>lam</sub> + Z·C<sub>mol</sub> ≈ C<sub>lam</sub> + C<sub>mol</sub></span><br><span class="u">formule complète : C = 135<span class="f"><span>φ⁴</span><span>l</span></span>P̄ + 12,1<span class="f"><span>φ³</span><span>l</span></span>·<span class="f"><span>1 + 192 φP̄</span><span>1 + 237 φP̄</span></span></span></span></div>
+  <div class="it"><span class="w">Ouverture (orifice) de surface A, δ = P₂/P₁</span> <span class="fx">δ &lt; 0,1 (moléculaire) : <span class="b">C = 11,6 A</span><br>0,1 ≤ δ ≤ 0,52 : C ≈ <span class="f"><span>20 A</span><span>1 − δ</span></span> &nbsp;· δ<sub>crit</sub> = 0,52 : C ≈ 41,6 A<br>0,52 &lt; δ &lt; 1 : C = 76,6 δ<sup>0,712</sup>√(1−δ<sup>0,288</sup>)·<span class="f"><span>A</span><span>1−δ</span></span><br><span class="u">A en cm², C en L/s (air)</span></span></div>
+  <div class="it"><span class="w">Autre gaz que l'air / coude</span> <span class="fx">C<sub>gaz</sub> = C<sub>air</sub> × facteur (moléc. / lam.) : O₂ 0,947/0,91 · N₂ 1,013/1,05 · He 2,64/0,92 · H₂ 3,77/2,07 · CO₂ 0,808/1,73 · H₂O 1,263/1,73<br>Coude θ : L<sub>e</sub> = L + 1,33·(θ/180)·d · C ↓ (plus sensible en laminaire) · Abaque : C = C<sub>m</sub>·α·J</span></div>
+
+  </div>
+</section>
+
+<!-- ========== PAGE 2 : COURS 2/2 ========== -->
+<section class="page cours">
+  <div class="top"><h1>FEUILLE 1 · COURS (2/2)</h1><span class="s">Pompes, dégazage · données · réflexes</span></div>
+  <div class="cols">
+
+  <h2>⑤ POMPES À VIDE <small>(ch. 4)</small></h2>
+  <p class="note"><b>Primaires</b> : refoulent à P<sub>atm</sub>, S en m³/h, P &gt; 1 → 10⁻² Pa. <b>Secondaires</b> : refoulent à P ≪ P<sub>atm</sub> → toujours <b>prévidées</b> par une primaire en série, régime moléculaire, amorçage ≈ 1 Pa, S en L/s. 3 mécanismes : entraînement moléculaire, mécanique, fixation.</p>
+  <table>
+    <tr><th>Pompe</th><th>Principe</th><th>S</th><th>P<sub>lim</sub></th><th>+ / −</th></tr>
+    <tr><td><b>Trompe à eau</b> (P)</td><td>Venturi : v↑ ⇒ P↓</td><td>—</td><td>qq cm Hg</td><td>− tension de vapeur de l'eau</td></tr>
+    <tr><td><b>Palettes</b> (P)</td><td>rotor excentré, 2 palettes : aspiration / transfert / refoulement</td><td>qq m³/h</td><td>10⁻¹ Pa (↓ 2 étages)</td><td>huile : étanche, lubrifie · − pas d'O₂</td></tr>
+    <tr><td><b>Sorption</b> (P)</td><td>zéolithes + azote liquide (adsorption)</td><td>~10 m³/h</td><td>~1 Pa</td><td>+ sans huile · − petites enceintes</td></tr>
+    <tr><td><b>Roots</b> (inter.)</td><td>2 rotors en « 8 » sans contact</td><td>500–5000 m³/h</td><td>10⁻² Pa</td><td>+ gros volumes vers 1 Pa</td></tr>
+    <tr><td><b>Turbomoléc.</b> (S)</td><td>ailettes rotor/stator, 10⁴ tr/min</td><td>10²–3·10³ L/s</td><td>10⁻⁶–10⁻¹⁰ Pa</td><td>+ propre, démarre à P<sub>atm</sub> · − chère</td></tr>
+    <tr><td><b>Diffusion d'huile</b> (S)</td><td>jets de vapeur d'huile vers le bas (tuyères), refroidie eau</td><td>grande</td><td>10⁻⁴ (sans piège) → 10⁻⁶ Pa</td><td>− rétrodiffusion ⇒ baffle + piège N₂ liq.</td></tr>
+    <tr><td><b>Ionique</b> (S)</td><td>décharge + champ B, gaz piégé par film de Ti</td><td>10–1000 L/s</td><td>10⁻⁸–10⁻⁹ Pa</td><td>+ très propre</td></tr>
+    <tr><td><b>Sublimation Ti</b></td><td>film de Ti évaporé (filament W)</td><td>&lt;10⁶ L/s</td><td>10⁻⁸ Pa</td><td>− sélective</td></tr>
+    <tr><td><b>Cryogénique</b></td><td>condensation sur paroi froide (N₂ 80 K, H₂ 25 K, He 4,5 K)</td><td>~10⁴ L/s</td><td>10⁻⁸–10⁻⁹ Pa</td><td>− coût d'exploitation</td></tr>
+  </table>
+  <div class="warn"><b class="t">Mise en route pompe à diffusion</b> (V1 série, V2 by-pass/prévidage, V3 écran)<br>
+  1) <b>Prévidage</b> : V1, V3 fermées, V2 ouverte → enceinte ≈ 1 Pa par la primaire.<br>
+  2) V2, V3 fermées, V1 ouverte → vide dans la pompe à diffusion + chauffage huile (≈ 20 min).<br>
+  3) V3 et V1 ouvertes, V2 fermée → <b>pompage secondaire</b> de l'enceinte.</div>
+
+  <h2>⑥ MISE EN ŒUVRE : DÉGAZAGE, FUITES <small>(ch. 5)</small></h2>
+  <div class="it"><span class="w">Flux de dégazage des parois (surface totale A)</span> <span class="fx"><span class="k">Q<sub>dgz</sub> = Q<sub>t</sub> × A</span> <span class="u">(mbar·L/s)</span><br><span class="u">Q<sub>t</sub> (mbar·L·s⁻¹·cm⁻²) : métaux 10⁻⁹–10⁻⁷ · non-métaux 10⁻⁷–10⁻⁵ · SI : Pa·m/s = W/m²</span></span></div>
+  <div class="it"><span class="w">Débit effectif nécessaire pour tenir une pression P</span> <span class="fx"><span class="k">S* = <span class="f"><span>Q<sub>dgz</sub> + Q<sub>fuite</sub></span><span>P</span></span></span> &nbsp;puis S pompe : <span class="f"><span>1</span><span>S</span></span> = <span class="f"><span>1</span><span>S*</span></span> − <span class="f"><span>1</span><span>C</span></span></span></div>
+  <p class="note">Mise sous vide : <b>I</b> pompage en volume (molécules du volume) → <b>II</b> pompage en surface (désorption, la pompe « équilibre le dégazage »). Réduire le dégazage : matériaux, <b>étuvage</b>, remise à l'air sous N₂. <b>Fuite ou dégazage ?</b> Remontée en pression : fuite = droite (dn constant) ; dégazage = courbe qui s'infléchit. Spectro de masse : N₂/O₂ = 4/5 · 1/5 ⇒ air ⇒ fuite.</p>
+  <h2>DONNÉES (tables du poly)</h2>
+  <p class="note">R = 8,314 J·mol⁻¹K⁻¹ · k = 1,38·10⁻²³ J/K · N<sub>a</sub> = 6,022·10²³ · e = 1,6·10⁻¹⁹ C · V<sub>m</sub> = 22,4 L/mol (0 °C) · T₀ = 273,15 K · g = 9,81</p>
+  <table>
+    <tr><th>Gaz</th><th class="c">M (g/mol)</th><th class="c">σ (10⁻¹⁰ m)</th><th class="c">T<sub>s</sub> (K)</th><th class="c">v̄ 20 °C (m/s)</th><th class="c">λ à 1 Pa (mm)</th><th class="c">η (10⁻⁵ Pa·s)</th></tr>
+    <tr><td><b>N₂</b></td><td class="c">28,0</td><td class="c">3,76</td><td class="c">102</td><td class="c">470</td><td class="c">6,4</td><td class="c">1,76</td></tr>
+    <tr><td><b>Air</b></td><td class="c">29,0</td><td class="c">3,68</td><td class="c">119,5</td><td class="c">463</td><td class="c">6,5</td><td class="c">1,81</td></tr>
+    <tr><td>O₂</td><td class="c">32,0</td><td class="c">3,56</td><td class="c">125</td><td class="c">440</td><td class="c">6,9</td><td class="c">1,98</td></tr>
+    <tr><td>Ar</td><td class="c">39,9</td><td class="c">3,67</td><td class="c">142</td><td class="c">394</td><td class="c">6,8</td><td class="c">2,20</td></tr>
+    <tr><td>H₂</td><td class="c">2,02</td><td class="c">2,62</td><td class="c">70,6</td><td class="c">1754</td><td class="c">12</td><td class="c">0,88</td></tr>
+    <tr><td>He</td><td class="c">4,00</td><td class="c">2,19</td><td class="c">80</td><td class="c">1245</td><td class="c">19,2</td><td class="c">1,95</td></tr>
+    <tr><td>H₂O</td><td class="c">18,0</td><td class="c">4,68</td><td class="c">659</td><td class="c">587</td><td class="c">4,2</td><td class="c">1,01</td></tr>
+    <tr><td>CH₄</td><td class="c">16,0</td><td class="c">4,19</td><td class="c">—</td><td class="c">622</td><td class="c">5,2</td><td class="c">1,08</td></tr>
+    <tr><td>CO₂</td><td class="c">44,0</td><td class="c">4,65</td><td class="c">—</td><td class="c">375</td><td class="c">4,2</td><td class="c">1,48</td></tr>
+  </table>
+  <p class="note">λ à une autre pression : <b>λ(P) = λ<sub>1 Pa</sub> / P(Pa)</b> · ρ<sub>u(θ)</sub> = ρ<sub>u(20)</sub>·T₂₀/T<sub>θ</sub> (N₂ : 1,148·10⁻⁵ ; air : 1,19·10⁻⁵ kg·m⁻³·Pa⁻¹) · σ(T) ≅ σ<sub>293</sub>(1+T<sub>s</sub>/293)/(1+T<sub>s</sub>/T) · n à 20 °C ≈ 2,5·10²⁰ m⁻³ × P(Pa)</p>
+  <table>
+    <tr><th>x = v/v<sub>p</sub></th><td class="c">0,25</td><td class="c">0,5</td><td class="c">0,75</td><td class="c">1</td><td class="c">1,25</td><td class="c">1,5</td><td class="c">1,75</td><td class="c">2</td><td class="c">2,5</td><td class="c">3</td></tr>
+    <tr><th>y(x) (fraction ≤ v)</th><td class="c">0,011</td><td class="c">0,081</td><td class="c">0,229</td><td class="c"><b>0,428</b></td><td class="c">0,627</td><td class="c">0,788</td><td class="c">0,894</td><td class="c">0,954</td><td class="c">0,994</td><td class="c">1,000</td></tr>
+    <tr><th>φ(x)</th><td class="c">0,133</td><td class="c">0,439</td><td class="c">0,723</td><td class="c"><b>0,830</b></td><td class="c">0,739</td><td class="c">0,535</td><td class="c">0,323</td><td class="c">0,165</td><td class="c">0,027</td><td class="c">0,003</td></tr>
+  </table>
+  <p class="note">y(x) = erf(x) − (2/√π)·x·e<sup>−x²</sup> (valeurs de la courbe du poly) · max de φ en x = 1 (v = v<sub>p</sub>) · fraction plus rapide que v₀ = 1 − y(x₀)</p>
+
+  <div class="warn"><b class="t">⚠ RÉFLEXES AVANT TOUT CALCUL</b>
+  <ul>
+    <li>θ(°C) + 273,15 = T(K) · 1 L = 10⁻³ m³ · 1 mbar = 100 Pa · 1 cm = 10⁻² m · m³/h ÷ 3,6 = L/s</li>
+    <li><b>m</b> (kg, 1 molécule) = M/N<sub>a</sub> ≠ <b>M</b> (g/mol → ×10⁻³ en kg/mol dans √(2RT/M))</li>
+    <li>σ = <b>diamètre</b> (volume d'1 molécule = πσ³/6) · S* ≠ S · q<sub>v</sub> varie, q<sub>pV</sub> se conserve</li>
+    <li>Conductance : déterminer le <b>régime</b> (Kn) d'abord, avec λ calculé à <b>P̄</b>, et unités du cours (cm, mbar, L/s)</li>
+  </ul></div>
+
+  <div class="warn" style="border-style:solid;border-width:1.6px"><b class="t">🧭 QUELLE FORMULE POUR QUEL EXO ?</b>
+  <ul>
+    <li>On donne P, V, T → <b>n = P/kT</b>, N* = nV, masse = N*·M/N<sub>a</sub></li>
+    <li>On parle de vitesses / chocs / λ → v̄ d'abord, puis Z<sub>s</sub> = ¼nv̄, λ = kT/(π√2σ²P), Z = v̄/λ</li>
+    <li>On parle d'énergie (eV) → ē<sub>c</sub> = 3/2 kT, T = 2E/3k, x² = E/kT puis courbe y(x)</li>
+    <li>Pompe + tuyau / « débit effectif » → <b>1/S* = 1/S + 1/C</b> et <b>P₁S* = P₂S</b></li>
+    <li>On demande C d'un tuyau → λ à P̄ → <b>Kn = φ/λ</b> → C<sub>lam</sub>, C<sub>mol</sub> ou les deux</li>
+    <li>Dégazage / tenir une pression → Q = q·A puis <b>S* = Q/P</b>, puis S par l'éq. fondamentale</li>
+    <li>Pompe primaire derrière une secondaire → P<sub>entrée prim.</sub> = Q/S<sub>prim.</sub> doit être <b>&lt; P<sub>refoulement sec.</sub></b></li>
+  </ul></div>
+  </div>
+</section>
+
+<!-- ========== PAGE 3 : TD1 + TD2 ========== -->
+<section class="page exo">
+  <div class="top"><h1>FEUILLE 2 · EXERCICES (1/2) — TD 1 et TD 2</h1><span class="s">Énoncé → <b>Q</b> question → <b>➜</b> réponse</span></div>
+  <div class="cols">
+
+  <div class="ex"><div class="h">TD1.1 · Calculs dans une atmosphère raréfiée</div>
+    <div class="en">Une enceinte de volume 12 L, placée à la température de 45 °C, contient de l'azote moléculaire sous la pression de 1,5·10⁻² Pa.</div>
+    <div class="q"><b>a)</b> Calculez la densité volumique de molécules d'azote.</div>
+    <div class="a">T = 45 + 273,15 = 318,15 K → n = P/kT = 1,5·10⁻² / (1,38·10⁻²³ × 318,15) = <b>3,41·10¹⁸ m⁻³</b></div>
+    <div class="q"><b>b)</b> Calculez la masse d'azote contenue dans l'enceinte.</div>
+    <div class="a">G = n·V·M/N<sub>a</sub> = 3,41·10¹⁸ × 12·10⁻³ × 28·10⁻³ / 6,022·10²³ = <b>1,9·10⁻⁹ kg</b></div>
+    <div class="q"><b>c)</b> Calculez la masse volumique unitaire et comparez avec la valeur de la table. Retrouvez la valeur de la température.</div>
+    <div class="a">ρ = G/V = 1,59·10⁻⁷ kg/m³ → ρ<sub>u</sub> = ρ/P = <b>1,06·10⁻⁵ kg·m⁻³·Pa⁻¹</b>. Table à 20 °C : 1,148·10⁻⁵ (plus grand car plus froid). ρ<sub>u(θ)</sub> = ρ<sub>u(20)</sub>·T₂₀/T<sub>θ</sub> ⇒ T<sub>θ</sub> = 293,15 × 1,148/1,06 ≈ <b>318 K = 45 °C ✓</b></div>
+    <div class="q"><b>d)</b> Calculez le nombre de molécules d'azote dans l'enceinte.</div>
+    <div class="a">N* = n·V = 3,41·10¹⁸ × 12·10⁻³ = <b>4,1·10¹⁶ molécules</b></div>
+    <div class="q"><b>e)</b> Calculez le diamètre cinétique de la molécule d'azote.</div>
+    <div class="a">σ(T) ≅ σ<sub>293</sub>(1 + T<sub>s</sub>/293)/(1 + T<sub>s</sub>/T), σ<sub>293</sub> = 3,76·10⁻¹⁰ m, T<sub>s</sub> = 102 K → <b>σ ≈ 3,8·10⁻¹⁰ m</b></div>
+    <div class="q"><b>f)</b> Calculez le volume réel de matière. En déduire le pourcentage.</div>
+    <div class="a">1 molécule = πσ³/6 ≈ 3,0·10⁻²⁹ m³ → V<sub>matière</sub> = N*·πσ³/6 ≈ <b>1,2·10⁻¹² m³</b> → 1,2·10⁻¹²/12·10⁻³ ≈ <b>10⁻⁸ %</b> : l'enceinte est quasiment vide</div>
+    <div class="q"><b>g)</b> Calculez le volume « disponible » par molécule et comparez au volume d'une molécule.</div>
+    <div class="a">V/N* = 1/n ≈ <b>2,9·10⁻¹⁹ m³</b>, soit <b>≈ 10¹⁰ fois</b> le volume d'une molécule (distance moyenne entre molécules (1/n)<sup>1/3</sup> ≈ 0,7 µm)</div>
+  </div>
+
+  <div class="ex"><div class="h">TD1.2 · Pressions partielles</div>
+    <div class="en">Dans une enceinte parfaitement vide de volume 12 L, on introduit 10⁻¹⁰ kg d'hélium et 13,55·10⁻¹⁰ kg d'azote. La température de l'ensemble est 20 °C.</div>
+    <div class="q">Calculez les pressions partielles de chaque gaz.</div>
+    <div class="a">P<sub>i</sub> = (m<sub>i</sub>/M<sub>i</sub>)·RT/V, T = 293,15 K<br>P<sub>He</sub> = (10⁻¹⁰/4·10⁻³) × 8,314 × 293,15 / 12·10⁻³ = <b>5,1·10⁻³ Pa</b><br>P<sub>N₂</sub> = (13,55·10⁻¹⁰/28·10⁻³) × 8,314 × 293,15 / 12·10⁻³ = <b>9,8·10⁻³ Pa</b></div>
+    <div class="q">Calculez la pression totale et la masse volumique du mélange.</div>
+    <div class="a">P = P<sub>He</sub> + P<sub>N₂</sub> = <b>1,5·10⁻² Pa</b> (Dalton) · ρ = Σm/V = 14,55·10⁻¹⁰ / 12·10⁻³ = <b>1,2·10⁻⁷ kg/m³</b></div>
+  </div>
+
+  <div class="ex"><div class="h">TD1.3 · Force exercée par la pression atmosphérique</div>
+    <div class="en">Une enceinte à vide comprend un couvercle supérieur « utile » de diamètre 25 cm. À l'extérieur, P<sub>atm</sub> = 1000 mbar. On appelle F la force résultante sur le couvercle.</div>
+    <div class="q">Tracez F en fonction de P, la pression intérieure. Conclusion.</div>
+    <div class="a">S = πD²/4 = 4,91·10⁻² m² → <b>F = (P<sub>atm</sub> − P)·S</b> : <b>droite décroissante</b><br>P = 10⁵ Pa → F = 0 · P = 5·10⁴ Pa → 2,45 kN · P = 0 → <b>F<sub>max</sub> = 4,9 kN ≈ 500 kg</b><br>Conclusion : F est presque maximale dès le vide grossier (à 10 mbar, 99 % de F<sub>max</sub>). Le couvercle doit tenir ~500 kg et un vide plus poussé ne change plus F.</div>
+  </div>
+
+  <div class="ex"><div class="h">TD1.4 · Nécessité d'une grande propreté</div>
+    <div class="en">On désire obtenir 10⁻¹¹ mbar dans une chambre en ultravide, mais on oublie 6 mm³ de graisse (masse volumique 0,84 g·cm⁻³, masse molaire 1,2·10⁴ g·mol⁻¹).</div>
+    <div class="q">Que représente cette graisse sous forme de volume gazeux à pomper à cette pression ?</div>
+    <div class="a">m = 6·10⁻³ cm³ × 0,84 = 5,04·10⁻³ g → N = m/M = 4,2·10⁻⁷ mol<br>P = 10⁻¹¹ mbar = 10⁻⁹ Pa, T = 293 K → V = NRT/P = 4,2·10⁻⁷ × 8,314 × 293 / 10⁻⁹ ≈ <b>10⁶ m³</b> (un million de m³ !)</div>
+    <div class="q">Quelle est l'hypothèse qui manque ?</div>
+    <div class="a">La <b>température</b> (on a pris 20 °C), et le fait que toute la graisse se vaporise.</div>
+  </div>
+
+  <div class="ex"><div class="h">TD2 · Théorie cinétique des gaz</div>
+    <div class="en">Enceinte de volume V = 20 L contenant du diazote sous P = 10⁻² Pa, thermostatée à θ = 40 °C (T = 313,15 K).</div>
+    <div class="sub">2.1 Calculs de base</div>
+    <div class="q"><b>a)</b> Déterminez la densité moléculaire d'azote dans l'enceinte, en déduire la masse d'azote.</div>
+    <div class="a">n = P/kT = 10⁻² / (1,38·10⁻²³ × 313,15) = <b>2,31·10¹⁸ m⁻³</b> · G = nVM/N<sub>a</sub> = <b>2,15·10⁻⁹ kg</b></div>
+    <div class="q"><b>b)</b> Déterminez toutes les vitesses caractéristiques des molécules d'azote.</div>
+    <div class="a">v<sub>p</sub> = √(2RT/M) = √(2 × 8,314 × 313,15 / 0,028) = <b>431 m/s</b> · v̄ = 1,128 v<sub>p</sub> = <b>487 m/s</b> · c = 1,224 v<sub>p</sub> = <b>528 m/s</b></div>
+    <div class="q"><b>c)</b> Déterminez les fréquences de collisions surfacique et volumique.</div>
+    <div class="a">Z<sub>s</sub> = ¼ n v̄ = <b>2,8·10²⁰ m⁻²s⁻¹</b> · Z = π√2 n σ² v̄ = 707 s⁻¹ → Z<sub>v</sub> = nZ/2 = <b>8,2·10²⁰ m⁻³s⁻¹</b></div>
+    <div class="q"><b>d)</b> Déterminez le libre parcours moyen (« free mean path ») et le temps de vol moyen.</div>
+    <div class="a">λ = kT/(π√2 σ² P) = <b>0,69 m</b> · τ = λ/v̄ = 1/Z = <b>1,4·10⁻³ s</b></div>
+    <div class="q"><b>e)</b> Déterminez l'énergie cinétique moyenne d'une molécule en joules et en eV.</div>
+    <div class="a">ē<sub>c</sub> = 3/2 kT = 1,5 × 1,38·10⁻²³ × 313,15 = <b>6,5·10⁻²¹ J = 0,040 eV</b> (÷ 1,6·10⁻¹⁹)</div>
+    <div class="sub">2.2 Calculs énergétiques : quelle température pour que…</div>
+    <div class="q"><b>a)</b> N₂ se dissocie en 2 atomes (E<sub>d</sub> = 9,8 eV) · <b>b)</b> s'ionise en N₂⁺ (18 eV) · <b>c)</b> en N₂²⁺ (45 eV) ?</div>
+    <div class="a"><b>T = 2E/3k</b> → a) 2 × 9,8 × 1,6·10⁻¹⁹ / (3 × 1,38·10⁻²³) = <b>7,6·10⁴ K</b> · b) <b>1,4·10⁵ K</b> · c) <b>3,5·10⁵ K</b></div>
+    <div class="q"><b>d)</b> Commentez. On utilise en fait des électrons accélérés : calculez les tensions d'accélération.</div>
+    <div class="a">Températures irréalistes (tout matériau fond bien avant) → impossible par chauffage. Électron accéléré : E = eU ⇒ <b>U = E/e ≈ 9,8 V ; 18 V ; 45 V</b> (un peu plus pour dépasser le seuil)</div>
+    <div class="sub">2.3 Densité moléculaire particulière</div>
+    <div class="q"><b>a)</b> Densité d'azote ayant une énergie cinétique entre E<sub>d</sub>/200 et E<sub>d</sub>/100. Remarques.</div>
+    <div class="a">E₁ = 0,049 eV, E₂ = 0,098 eV, kT = 0,027 eV → <b>x = √(E/kT)</b> : x₁ = 1,35, x₂ = 1,91 → y(x₁) = 0,70, y(x₂) = 0,94<br>Δn = n·[y(x₂) − y(x₁)] = 0,24 n = <b>5,6·10¹⁷ m⁻³</b>. Remarque : ¼ des molécules, mais leur énergie reste ≪ E<sub>d</sub> : aucune dissociation.</div>
+    <div class="q"><b>b)</b> Nombre de ces molécules qui frappent une face d'une cible circulaire de rayon 5 cm.</div>
+    <div class="a">v₁ = x₁v<sub>p</sub> = 581 m/s, v₂ = 822 m/s → v<sub>moy</sub> ≈ 700 m/s · A = π·0,05² = 7,85·10⁻³ m²<br>¼·Δn·v<sub>moy</sub>·A ≈ <b>7,6·10¹⁷ chocs/s</b></div>
+    <div class="q"><b>c)</b> Parmi elles, combien frappent la cible avec une incidence ≤ 20° ? <b>d)</b> Fréquence de chocs « ad hoc ».</div>
+    <div class="a">Loi en cosinus : fraction = sin²20° = 0,117 → <b>≈ 9·10¹⁶ chocs/s</b> = fréquence de chocs ad hoc</div>
+    <div class="sub">2.4 Injection de gaz</div>
+    <div class="q">On injecte du méthane en 20 s. Débit-pV moyen de l'injecteur pour obtenir 2·10⁻² Pa dans l'enceinte ?</div>
+    <div class="a">q<sub>pV</sub> = P·V/t = 2·10⁻² × 20·10⁻³ / 20 = <b>2·10⁻⁵ Pa·m³/s</b> (si on ajoute 10⁻² Pa au N₂ déjà présent : ΔP·V/t = 1·10⁻⁵)</div>
+  </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 4 : TD3 + TD4 ========== -->
+<section class="page exo">
+  <div class="top"><h1>FEUILLE 2 · EXERCICES (2/2) — TD 3 et TD 4</h1><span class="s">Énoncé → <b>Q</b> question → <b>➜</b> réponse</span></div>
+  <div class="cols">
+
+  <div class="ex"><div class="h">TD3.1 · Pression dans une enceinte (canalisation simple)</div>
+    <div class="en">Enceinte de V = 24 L reliée à une pompe primaire de capacité d'aspiration S = 108 m³·h⁻¹ par une canalisation rectiligne de longueur l = 80 cm et de diamètre φ = 6 cm. Pression à l'admission de la pompe P₂ = 2·10⁻² mbar. Pression <b>espérée</b> dans l'enceinte P₁* = 5·10⁻² mbar. Calculer la pression réelle atteinte (méthode itérative, écart ≤ 0,5 %).</div>
+    <div class="q">Quelle est la condition pour le choix de la valeur initiale de P₁* ?</div>
+    <div class="a"><b>P₁* &gt; P₂</b> : le gaz va de l'enceinte vers la pompe, donc l'enceinte est toujours à une pression plus haute. On part par exemple de P₁* = 10⁻¹ mbar.</div>
+    <div class="q">Calculer la pression réelle atteinte.</div>
+    <div class="a">S = 108/3,6 = 30 L/s · air σ = 3,68·10⁻¹⁰ m, T = 293 K. À chaque ligne :<br>P̄ = (P₁*+P₂)/2 → λ = kT/(π√2σ²P̄) (<b>P̄ en Pa</b>) → Kn = φ/λ → régime → C<sub>lam</sub> = 135φ⁴P̄/l, C<sub>mol</sub> = 12,1αφ³/l (α = 0,909 → 29,7 L/s) → intermédiaire : C = C<sub>lam</sub> + C<sub>mol</sub> (1ʳᵉ ligne : 131 + 30 = 161) → 1/S* = 1/S + 1/C → <b>P₁ = P₂·S/S*</b></div>
+    <table class="it3">
+      <tr><th>P₁* mbar</th><th>P̄ mbar</th><th>λ</th><th>φ/λ</th><th>C L/s</th><th>S* L/s</th><th>P₁ mbar</th><th>écart</th></tr>
+      <tr><td>1·10⁻¹</td><td>0,060</td><td>1,1 mm</td><td>54 int.</td><td>161</td><td>25,3</td><td>2,37·10⁻²</td><td>&gt; 100 %</td></tr>
+      <tr><td>2,37·10⁻²</td><td>0,022</td><td>3,1 mm</td><td>20 int.</td><td>78</td><td>21,6</td><td>2,77·10⁻²</td><td>14 %</td></tr>
+      <tr><td>2,77·10⁻²</td><td>0,024</td><td>2,8 mm</td><td>21 int.</td><td>82</td><td>22,0</td><td>2,73·10⁻²</td><td>1,5 %</td></tr>
+      <tr><td>2,73·10⁻²</td><td>0,024</td><td>2,8 mm</td><td>21 int.</td><td>81,5</td><td>21,9</td><td><b>2,74·10⁻²</b></td><td>0,15 % ✓</td></tr>
+    </table>
+    <div class="a"><b>P₁ ≈ 2,7·10⁻² mbar</b>, en dessous des 5·10⁻² mbar espérés : l'objectif est atteint.</div>
+  </div>
+
+  <div class="ex"><div class="h">TD3.2 · Calcul de conductance</div>
+    <div class="en">On place 3 conductances identiques C = 250 L/s : <b>C₁</b> sur une branche, en <b>parallèle</b> avec <b>C₂ et C₃ en série</b> sur l'autre branche.</div>
+    <div class="q">Calculez la conductance équivalente.</div>
+    <div class="a">C₂ + C₃ en série : 1/(1/250 + 1/250) = 125 L/s → en parallèle avec C₁ : <b>C = 250 + 125 = 375 L/s</b></div>
+    <div class="q">Précisez les conditions pour que ceci soit toujours vrai.</div>
+    <div class="a"><b>Régime moléculaire</b> : les C ne dépendent pas de la pression. Il faut aussi que les éléments n'interagissent pas (raccords et effets d'entrée négligeables).</div>
+  </div>
+
+  <div class="ex"><div class="h">TD3.3 · Pompe couplée à une canalisation</div>
+    <div class="en">« Le résultant d'une pompe de 600 L/s et d'une canalisation de 400 L/s est environ 190 L/s. »</div>
+    <div class="q">Vrai ou faux ? Faites aussi le calcul.</div>
+    <div class="a">1/S* = 1/600 + 1/400 → S* = 600×400/(600+400) = <b>240 L/s</b> ⇒ affirmation <b>FAUSSE</b>. Sur l'abaque, on relie 60 et 40 et on lit 24 au milieu. 190 L/s correspond à 500 + 300 (187,5 L/s).</div>
+  </div>
+
+  <div class="ex"><div class="h">TD4.1 · Conception d'un groupe de pompage</div>
+    <div class="en">Une pompe à diffusion d'huile maintient 10⁻⁷ mbar (= 10⁻⁵ Pa) dans une enceinte. Elle est évacuée par une pompe primaire à palettes et reliée à l'enceinte par un baffle surmonté d'un piège à azote liquide.</div>
+    <div class="q"><b>a)</b> Schématisez le groupe, indiquez le rôle de chaque élément et les étapes de mise en route.</div>
+    <div class="a">Enceinte → <b>piège N₂ liquide</b> (condense les vapeurs) → <b>baffle</b> (lamelles refroidies qui arrêtent la rétrodiffusion d'huile) → vanne écran V3 → <b>pompe à diffusion</b> (secondaire) → vanne V1 → <b>pompe à palettes</b> (primaire, refoule à P<sub>atm</sub>). By-pass V2 : enceinte → primaire.<br>1) V1, V3 fermées, V2 ouverte : prévidage (≈ 1 Pa) · 2) V2, V3 fermées, V1 ouverte : vide dans la diffusion + chauffage de l'huile (≈ 20 min) · 3) V1 et V3 ouvertes, V2 fermée : pompage secondaire</div>
+    <div class="q"><b>b)</b> S* (enceinte) = 2 m³/s, S (entrée diffusion) = 3 m³/s : flux de dégazage ? Conductance baffle + piège ?</div>
+    <div class="a">Q<sub>dgz</sub> = P·S* = 10⁻⁵ × 2 = <b>2·10⁻⁵ Pa·m³/s</b> · 1/C = 1/S* − 1/S = 1/2 − 1/3 = 1/6 → <b>C = 6 m³/s</b></div>
+    <div class="q"><b>c)</b> Primaires dispo : S₁ = 20, S₂ = 30, S₃ = 50 m³/h. Flux max à évacuer : 5·10⁻² Pa·m³/s. Pression d'entrée de chaque pompe ? Lesquelles sont utilisables si la diffusion refoule à 5 Pa ? Conductance de la canalisation entre les deux pompes ?</div>
+    <div class="a">P = Q/S avec <b>S en m³/s</b> (÷ 3600) : S₁ → <b>9 Pa</b> · S₂ → <b>6 Pa</b> · S₃ → <b>3,6 Pa</b><br>Il faut P<sub>entrée primaire</sub> &lt; P<sub>refoulement diffusion</sub> = 5 Pa ⇒ <b>seule la pompe 3</b><br>C = Q/(P<sub>sortie diff.</sub> − P<sub>entrée prim.</sub>) = 5·10⁻²/(5 − 3,6) = <b>3,6·10⁻² m³/s ≈ 36 L/s</b> (minimum)</div>
+  </div>
+
+  <div class="ex"><div class="h">TD4.2 · Choix d'une pompe en vide poussé</div>
+    <div class="en">Enceinte tout inox, volume 40 L, diamètre intérieur 30 cm, contenant de l'air sous 10⁻⁴ Pa à 52 °C. Taux de dégazage surfacique de l'inox : q<sub>dgz</sub> = 10⁻⁶ unité SI.</div>
+    <div class="q"><b>a)</b> Faites l'analyse dimensionnelle du taux de dégazage et donnez l'unité SI.</div>
+    <div class="a">Flux pV par unité de surface : (Pa·m³·s⁻¹)/m² = <b>Pa·m·s⁻¹</b> = N·m⁻²·m·s⁻¹ = <b>W/m²</b></div>
+    <div class="q"><b>b)</b> Déterminez la nature la plus probable du gaz qui dégaze.</div>
+    <div class="a">La <b>vapeur d'eau H₂O</b>, adsorbée sur les parois lors de la remise à l'air (plus tard, H₂ pour l'inox)</div>
+    <div class="q"><b>c)</b> L'orifice de pompage a un diamètre de 12 cm : calculez le débit-volume effectif à la sortie de l'enceinte.</div>
+    <div class="a">h = V/(πr²) = 0,04/(π × 0,15²) = 0,57 m · A = 2πrh + 2πr² = 0,67 m² (− orifice π·0,06² ≈ 0,66 m²)<br>Q = q·A = 6,6·10⁻⁷ Pa·m³/s → <b>S* = Q/P = 6,6·10⁻³ m³/s = 6,6 L/s</b></div>
+    <div class="q"><b>d)</b> Conduit cylindrique de même diamètre, L = 1 m : capacité d'aspiration de la pompe secondaire ? Correction avec une vanne C<sub>v</sub> = 1000 L/s ?</div>
+    <div class="a">λ ≈ 75 m ≫ 12 cm ⇒ <b>moléculaire</b> · α = 1/(1 + 1,33 × 12/100) = 0,86 → C = 12,1 × 0,86 × 12³/100 = <b>180 L/s</b><br>1/S = 1/S* − 1/C = 1/6,6 − 1/180 → <b>S ≈ 6,9 L/s</b><br>Vanne en série : 1/C' = 1/180 + 1/1000 → C' = 153 L/s → <b>S ≈ 6,9 L/s</b> : presque inchangé, car C ≫ S*</div>
+  </div>
+  </div>
+</section>
+
+</body>
+</html>

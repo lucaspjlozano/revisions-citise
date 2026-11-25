@@ -11,6 +11,7 @@ Sites de révision faits pendant le cursus CITISE : démos de colle, exos corrig
 | Mécanique des fluides | [fluides/](https://lucaspjlozano.github.io/revisions-citise/fluides/) |
 | Techniques du vide (fiche A4) | [vide/](https://lucaspjlozano.github.io/revisions-citise/vide/) |
 | Communication (QCM) | [communication/](https://lucaspjlozano.github.io/revisions-citise/communication/) |
+| Magnéto-induction (magnétostatique, induction) | [magneto/](https://lucaspjlozano.github.io/revisions-citise/magneto/) |
 
 Chaque page est un fichier HTML autonome ; la progression est gardée dans le navigateur.
 Une erreur ou une amélioration ? Ouvre une *issue* ou propose une *pull request* : elle sera relue avant d'être intégrée.

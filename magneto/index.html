@@ -984,7 +984,7 @@ const CHAP_BY = Object.fromEntries(CHAPS.map(c => [c.id, c]));
 
 /* ===== data-td.js ===== */
 // @ts-check
-/* TD2 « Induction électromagnétique » (CITISE 2, 2026-2027) : 11 exercices corrigés.
+/* TD2 « Induction électromagnétique » (CITISE 2, 2026-2027) : 11 exercices corrigés, plus td12 (exercice de flux coupé donné en cours).
    Exercice : { id, n, title, theme, diff (1 à 3), enonce, notes?, parts:[{q, hints:[], steps:[]}], methodes, erreurs:[], an:[[grandeur, valeur, unité]], retenir }
    Les valeurs de an sont recalculées par tools/verif-calculs.mjs. */
 const TD = [
@@ -1333,6 +1333,95 @@ ${fig('transfo', 'Carcasse de fer, primaire N₁ (A₁B₁) et secondaire N₂ (
     erreurs: [L`Croire qu'un transformateur fonctionne en continu : sans variation de flux, \(u_2 = 0\).`],
     an: [],
     retenir: L`\(U_2/U_1 = N_2/N_1\) découle seulement de Faraday et du flux commun par spire.`
+  },
+  {
+    id: 'td12', n: 12, tag: 'Ex. de cours', eyebrow: 'Exercice donné en cours · très probable au DS',
+    title: 'Spire en translation : flux coupé et loi de Faraday', theme: 'lorentz', diff: 2,
+    enonce: L`<p>Une spire rectangulaire \((C)\) de largeur \(L\) et de hauteur \(h\) se déplace à vitesse uniforme \(\ve = v_e\,\vec i\) dans une région où règne un champ magnétique uniforme et statique \(\vB = B\,\vec k\). À \(t = 0\), la spire est dans le plan \(x = 0\) ; pendant \(\d t\), elle balaie une surface élémentaire \(\d S\).</p>
+<ol>
+<li>Déterminer le champ électromoteur \(\Em\) dû au mouvement de la spire dans le champ magnétique.</li>
+<li>Pendant \(\d t\), la spire balaie une surface élémentaire \(\d S\) : a) exprimer le déplacement élémentaire \(\d\vec r\) en fonction de \(\ve\) et \(\d t\) ; b) déterminer \(\d S\) en fonction de \(L\) et \(\d r\) ; c) orienter le vecteur surface élémentaire \(\d\vec S\).</li>
+<li>Déterminer le flux magnétique coupé par la spire pendant \(\d t\).</li>
+<li>Déterminer le flux coupé par un conducteur rectiligne de longueur \(L\), puis par la spire, pendant \(\d t\).</li>
+<li>Déterminer la f.é.m. induite dans la spire par les deux méthodes : a) circulation du champ électromoteur, \(e = \oint_{(C)}\Em\cdot\dl\) ; b) loi de Faraday, \(e = -\d\Phi_B/\d t\).</li>
+<li>Comparer les deux résultats et conclure.</li>
+</ol>
+${fig('coupe', 'La spire est dans le plan x = 0 (L selon j, h selon k), B est vertical, la vitesse selon i. En pointillé, sa position à t + dt ; en grisé, les bandes balayées par les deux côtés de longueur L.')}`,
+    notes: L`<p>Le texte dit que la spire est « orientée dans le plan \((x,y)\) », mais il précise aussi qu'elle est dans le plan \(x = 0\), et le schéma la dessine verticale : \(L\) selon \(\vec j\), \(h\) selon \(\vec k\). La correction suit le schéma (spire dans le plan \((y,z)\), donc \(\vB\) est <b>dans</b> le plan de la spire). Avec l'autre lecture (spire horizontale, \(\vB\) normal à la spire), les conclusions sont les mêmes : \(e = 0\). C'est précisé à chaque question.</p>`,
+    parts: [
+      {
+        q: L`Champ électromoteur \(\Em\).`,
+        hints: [L`Circuit mobile dans un champ permanent : induction de Lorentz.`, L`Base directe : \(\vec i\wedge\vec j = \vec k\), \(\vec j\wedge\vec k = \vec i\), \(\vec k\wedge\vec i = \vec j\). Donc \(\vec i\wedge\vec k = -\vec j\).`],
+        steps: [
+          L`Les porteurs de charge \(q\) sont entraînés avec la spire à la vitesse \(\ve\) et subissent la force magnétique \(q\,\ve\wedge\vB\). Le champ électromoteur est cette force par unité de charge :`,
+          L`\[\Em = \ve\wedge\vB = v_eB\,(\vec i\wedge\vec k) = -v_eB\,\vec j.\]`,
+          L`\(\Em\) est <b>uniforme</b> (même vecteur en tout point de la spire) et dirigé selon \(-\vec j\), c'est-à-dire parallèle aux deux côtés de longueur \(L\) et perpendiculaire aux deux côtés de hauteur \(h\).`
+        ]
+      },
+      {
+        q: L`Déplacement \(\d\vec r\), surface balayée \(\d S\) et orientation de \(\d\vec S\).`,
+        hints: [L`Un côté de longueur \(L\) qui avance de \(\d r\) perpendiculairement à lui-même balaie un rectangle.`, L`Convention du cours : l'élément \(\dl\) qui se déplace de \(\d\vec r\) balaie \(\d\vec S = \d\vec r\wedge\dl\). Il faut d'abord choisir le sens positif de la spire.`],
+        steps: [
+          L`<b>a)</b> Mouvement de translation uniforme : tous les points de la spire ont la même vitesse, donc \(\d\vec r = \ve\,\d t = v_e\,\d t\,\vec i\).`,
+          L`<b>b)</b> Un côté de longueur \(L\) (selon \(\vec j\)) avance de \(\d r = v_e\,\d t\) selon \(\vec i\), perpendiculairement à lui-même. Il balaie un rectangle de côtés \(L\) et \(\d r\) : \(\d S = L\,\d r = L\,v_e\,\d t\). (Un côté de hauteur \(h\) balaie de même \(h\,\d r\), dans le plan \((x,z)\).)`,
+          L`<b>c)</b> On oriente la spire : sens positif \(+\vec j\) sur le côté du bas, \(+\vec k\) sur le côté \(y = L\), \(-\vec j\) en haut, \(-\vec k\) en \(y = 0\). Par la règle de la main droite, sa normale est \(\vn = \vec j\wedge\vec k = +\vec i\).`,
+          L`Avec \(\d\vec S = \d\vec r\wedge\dl\) : côté du bas (\(\dl = \d y\,\vec j\), longueur totale \(L\)) : \(\d\vec S_{\text{bas}} = v_e\d t\,\vec i\wedge L\,\vec j = +L\,v_e\,\d t\,\vec k\). Côté du haut (\(\dl\) selon \(-\vec j\)) : \(\d\vec S_{\text{haut}} = -L\,v_e\,\d t\,\vec k\).`,
+          L`Côtés verticaux (\(\dl\) selon \(\pm\vec k\)) : \(\d\vec S = \d\vec r\wedge(\pm h\,\vec k) = \mp h\,v_e\,\d t\,\vec j\), donc selon \(\pm\vec j\), perpendiculaire à \(\vB\).`
+        ]
+      },
+      {
+        q: L`Flux coupé par la spire pendant \(\d t\).`,
+        hints: [L`Le flux coupé est la somme des flux de \(\vB\) à travers les quatre bandes balayées.`, L`\(\vB\cdot\vec j = 0\) : les côtés verticaux ne coupent aucune ligne de champ.`],
+        steps: [
+          L`\(\d\Phi_c = \sum\vB\cdot\d\vec S = B\vec k\cdot(L v_e\d t\,\vec k) + B\vec k\cdot(-L v_e\d t\,\vec k) + 0 + 0\).`,
+          L`\[\d\Phi_c = BLv_e\,\d t - BLv_e\,\d t = 0.\]`,
+          L`Interprétation : \(\vB\) étant uniforme, le côté du bas et le côté du haut coupent exactement le même nombre de lignes de champ, mais ils sont parcourus en sens opposés : leurs contributions s'annulent.`
+        ]
+      },
+      {
+        q: L`Flux coupé par un conducteur rectiligne de longueur \(L\), puis par la spire.`,
+        hints: [L`Prends le côté du bas, orienté selon \(+\vec j\).`, L`Pour la spire entière, réutilise la question 3.`],
+        steps: [
+          L`<b>Conducteur de longueur \(L\)</b> (côté du bas, orienté selon \(+\vec j\)) : \(\d\Phi_c = \vB\cdot\d\vec S_{\text{bas}} = B\,L\,v_e\,\d t\), donc \(\dfrac{\d\Phi_c}{\d t} = BLv_e \ne 0\).`,
+          L`Ce conducteur est donc le siège d'une f.é.m. \(e_{\text{bas}} = -\dfrac{\d\Phi_c}{\d t} = -BLv_e\) : un segment qui « coupe » des lignes de champ est un générateur.`,
+          L`<b>Spire \((C)\)</b> : \(\d\Phi_c = 0\) (question 3). Le côté du haut est un générateur identique, mais il est monté en opposition dans le circuit.`,
+          L`Un conducteur de longueur \(h\) (côté vertical) a un flux coupé nul : la bande qu'il balaie est parallèle à \(\vB\).`
+        ]
+      },
+      {
+        q: L`F.é.m. par la circulation du champ électromoteur.`,
+        hints: [L`Découpe \(\oint\) en quatre côtés.`, L`\(\Em\) est selon \(-\vec j\) : il est perpendiculaire aux côtés verticaux.`],
+        steps: [
+          L`Côté du bas (\(\dl = \d y\,\vec j\), \(y\) de 0 à \(L\)) : \(\displaystyle\int(-v_eB\,\vec j)\cdot\d y\,\vec j = -v_eBL\).`,
+          L`Côté du haut (parcouru selon \(-\vec j\)) : \(+v_eBL\). Côtés verticaux : \(\Em\perp\dl\), contribution nulle.`,
+          L`\[e = \oint_{(C)}\Em\cdot\dl = -v_eBL + 0 + v_eBL + 0 = 0.\]`,
+          L`On retrouve le lien avec le flux coupé : sur chaque côté, \(\int\Em\cdot\dl = -\d\Phi_c/\d t\) (par exemple \(-BLv_e\) pour le côté du bas).`
+        ]
+      },
+      {
+        q: L`F.é.m. par la loi de Faraday.`,
+        hints: [L`Calcule le flux \(\Phi_B\) de \(\vB\) à travers la spire, avec la normale \(\vn = \vec i\) choisie plus haut.`],
+        steps: [
+          L`\(\Phi_B(t) = \iint_S\vB\cdot\vn\,\d S = B\,(\vec k\cdot\vec i)\,Lh = 0\) à tout instant : \(\vB\) est dans le plan de la spire, aucune ligne de champ ne la traverse.`,
+          L`\[e = -\frac{\d\Phi_B}{\d t} = 0.\]`,
+          L`Avec l'autre lecture de l'énoncé (spire horizontale, \(\vn = \vec k\)), \(\Phi_B = BLh\) est constant car \(\vB\) est uniforme et la spire garde la même surface et la même orientation : \(e = 0\) aussi.`
+        ]
+      },
+      {
+        q: L`Comparer et conclure.`,
+        hints: [L`Relie le flux coupé et la variation du flux à travers la spire.`],
+        steps: [
+          L`Les deux méthodes donnent \(e = 0\) : elles sont <b>cohérentes</b>. C'est le résultat général du cours : pour un circuit fermé, le flux coupé pendant \(\d t\) est égal à la variation du flux à travers le circuit, ici \(\d\Phi_c = \d\Phi_B = 0\).`,
+          L`Conclusion physique : un circuit fermé rigide <b>en translation</b> dans un champ <b>uniforme et statique</b> n'a pas de f.é.m., donc pas de courant induit (\(i = e/R = 0\)) et pas de force de Laplace qui le freine.`,
+          L`Pourtant, chaque côté de longueur \(L\) est le siège d'une f.é.m. \(\pm BLv_e\) : la spire est équivalente à deux générateurs identiques montés en opposition.`,
+          L`Pour obtenir \(e \ne 0\), il faut que le flux varie : champ non uniforme, spire partiellement dans le champ (entrée ou sortie d'une zone, ${xref('td3')}), rotation de la spire (${xref('td6')}), ou champ variable dans le temps.`
+        ]
+      }
+    ],
+    methodes: L`<ul><li>Champ électromoteur de Lorentz : \(\Em = \ve\wedge\vB\), calculé avec les produits vectoriels de la base directe.</li><li>Surface balayée par un élément : \(\d\vec S = \d\vec r\wedge\dl\), puis \(\d\Phi_c = \vB\cdot\d\vec S\) et \(e = -\d\Phi_c/\d t\).</li><li>Vérification par Faraday : \(e = -\d\Phi/\d t\) avec la même orientation de la spire.</li></ul>`,
+    erreurs: [L`Conclure \(e = BLv_e\) pour la spire en ne regardant qu'un seul côté : le côté opposé apporte \(-BLv_e\).`, L`Se tromper de signe dans \(\vec i\wedge\vec k\) : c'est \(-\vec j\), pas \(+\vec j\).`, L`Orienter \(\d\vec S\) sans avoir choisi le sens positif de la spire : le signe du flux coupé dépend de l'orientation de \(\dl\).`, L`Confondre flux coupé (surface balayée pendant \(\d t\)) et flux à travers la spire (surface de la spire).`],
+    an: [],
+    retenir: L`Un segment de longueur \(L\) qui coupe des lignes de champ porte une f.é.m. \(BLv\) ; mais pour une spire fermée en translation dans un champ uniforme, les f.é.m. des côtés se compensent : \(\d\Phi_c = \d\Phi = 0\) et \(e = 0\). Les deux méthodes (circulation de \(\Em\) et Faraday) doivent toujours donner le même résultat.`
   }
 ];
 
@@ -2364,6 +2453,35 @@ const SCHEMAS = {
     b += S.arrow(60, 172, 120, 172, 'k') + S.t(124, 176, 'v', 'it') + S.t(270, 176, 'B', 'it cB');
     return S.svg(310, 185, b, 'TD3 : cadre et zone de champ');
   },
+  coupe() {
+    // spire dans le plan x = 0 : L selon j (oblique), h selon k (vertical) ; position à t (plein) et t + dt (pointillé)
+    const A = [80, 160], jv = [70, -40], hv = [0, -100], dx = 55;
+    const P = (p, q) => [p[0] + q[0], p[1] + q[1]];
+    const Bc = P(A, jv), Cc = P(Bc, hv), Dc = P(A, hv);
+    const sh = p => [p[0] + dx, p[1]];
+    const pts = a => a.map(p => p[0] + ',' + p[1]).join(' ');
+    let b = '';
+    // bandes balayées par les côtés de longueur L (bas et haut)
+    b += '<polygon points="' + pts([A, Bc, sh(Bc), sh(A)]) + '" class="zone"/>';
+    b += '<polygon points="' + pts([Dc, Cc, sh(Cc), sh(Dc)]) + '" class="zone"/>';
+    b += '<polygon points="' + pts([sh(A), sh(Bc), sh(Cc), sh(Dc)]) + '" class="k" stroke-width="1.2" stroke-dasharray="5 4" fill="none"/>';
+    b += '<polygon points="' + pts([A, Bc, Cc, Dc]) + '" class="k" stroke-width="2" fill="none"/>';
+    // sens positif : +j sur le côté du bas, donc n = +i
+    b += S.arrow(A[0] + 12, A[1] - 7, A[0] + 48, A[1] - 27.5, 'I', 2) + S.t(78, 194, 'sens + (n = +i)', 'cI');
+    // champ électromoteur sur les côtés de longueur L : E_m = −v B j
+    // (décalées hors des côtés pour ne pas masquer le sens positif)
+    b += S.arrow(Dc[0] + 52, Dc[1] - 40, Dc[0] + 16, Dc[1] - 19, 'E', 2) + S.arrow(Bc[0] - 18, Bc[1] + 26, Bc[0] - 54, Bc[1] + 47, 'E', 2);
+    b += S.t(150, 16, 'E_m = v∧B = −vB j', 'cE') + S.t(140, 176, 'E_m', 'cE');
+    b += S.t(52, 112, 'h', 'it') + S.t(108, 132, 'L', 'it');
+    b += S.t(180, 150, 'dS = L dr', 'small');
+    // vitesse et champ
+    b += S.arrow(225, 100, 285, 100, 'k', 1.8) + S.t(290, 104, 'v = v i', 'it');
+    b += S.arrow(350, 175, 350, 40, 'B', 1.6) + S.arrow(375, 175, 375, 40, 'B', 1.6) + S.t(382, 50, 'B = B k', 'it cB');
+    // axes
+    b += S.arrow(20, 205, 60, 205, 'k', 1.2) + S.t(64, 209, 'i', 'it') + S.arrow(20, 205, 20, 168, 'k', 1.2) + S.t(10, 168, 'k', 'it') + S.arrow(20, 205, 44, 191, 'k', 1.2) + S.t(46, 190, 'j', 'it');
+    b += S.t(205, 206, 'pointillé : position à t + dt', 'small');
+    return S.svg(445, 215, b, 'Spire en translation dans un champ uniforme : surfaces balayées');
+  },
   td5() {
     let b = '<ellipse cx="150" cy="100" rx="110" ry="36" class="k" stroke-width="1.6"/>';
     b += '<line x1="150" y1="100" x2="258" y2="104" class="E" stroke-width="2"/>' + S.t(140, 118, 'O') + S.t(262, 112, 'P');
@@ -2658,21 +2776,21 @@ function pageHead(eyebrow, title, lead) {
 }
 function diffDots(d) { return '<span class="chip" title="Difficulté ' + d + ' sur 3">' + '●'.repeat(d) + '○'.repeat(3 - d) + '</span>'; }
 function themeChip(th) { return '<span class="chip">' + (THEMES[th] || th) + '</span>'; }
-function typeChip(x) { return x.kind === 'td' ? '<span class="chip">TD2</span>' : '<span class="chip">' + TYPES[x.type] + '</span>'; }
+function typeChip(x) { return x.kind === 'td' ? '<span class="chip">' + (x.tag || 'TD2') + '</span>' : '<span class="chip">' + TYPES[x.type] + '</span>'; }
 function stDot(id) { const s = exoStatus(id); return '<span class="st ' + (s === 'ok' ? 'ok' : s === 'rev' ? 'rev' : '') + '" title="' + (s === 'ok' ? 'Maîtrisé' : s === 'rev' ? 'À revoir' : 'Pas encore travaillé') + '"></span>'; }
 function exoHref(x) { return x.kind === 'td' ? '#td/' + x.n : '#exos/' + x.id; }
-function exoLabel(x) { return x.kind === 'td' ? 'TD2 · Ex. ' + x.n : x.id.toUpperCase(); }
+function exoLabel(x) { return x.kind === 'td' ? (x.tag || 'TD2 · Ex. ' + x.n) : x.id.toUpperCase(); }
 
 /** Ligne de liste d'exercice. */
 function exoItem(x) {
-  return '<a class="ex-item" href="' + exoHref(x) + '"><span class="qnum">' + exoLabel(x) + '</span><div><h4>' + x.title + '</h4><p>' + (THEMES[x.theme] || '') + ' · ' + (x.kind === 'td' ? 'TD2' : TYPES[x.type]) + '</p></div><span class="row" style="gap:8px">' + diffDots(x.diff) + stDot(x.id) + '</span></a>';
+  return '<a class="ex-item" href="' + exoHref(x) + '"><span class="qnum">' + exoLabel(x) + '</span><div><h4>' + x.title + '</h4><p>' + (THEMES[x.theme] || '') + ' · ' + (x.kind === 'td' ? (x.tag ? 'Fait en cours · probable au DS' : 'TD2') : TYPES[x.type]) + '</p></div><span class="row" style="gap:8px">' + diffDots(x.diff) + stDot(x.id) + '</span></a>';
 }
 
 /** Page complète d'un exercice (TD ou banque). */
 function renderExo(app, x, list) {
   touch(x.id);
   const idx = list.indexOf(x), prev = list[idx - 1], next = list[idx + 1];
-  let h = '<header class="page-h"><span class="eyebrow">' + (x.kind === 'td' ? 'TD2 · Exercice ' + x.n : 'Banque d’exercices · ' + x.id.toUpperCase()) + '</span><h1>' + x.title + '</h1>' +
+  let h = '<header class="page-h"><span class="eyebrow">' + (x.kind === 'td' ? (x.eyebrow || 'TD2 · Exercice ' + x.n) : 'Banque d’exercices · ' + x.id.toUpperCase()) + '</span><h1>' + x.title + '</h1>' +
     '<div class="chips">' + themeChip(x.theme) + typeChip(x) + diffDots(x.diff) + (x.td ? '<a class="chip" href="#td/' + x.td.slice(2) + '">↗ lié au TD2 · ex. ' + x.td.slice(2) + '</a>' : '') + '</div></header>';
   h += '<div class="row no-print" style="margin-bottom:6px"><button class="btn sm" id="open-all">Tout déplier</button><button class="btn sm" id="close-all">Tout replier</button><span class="sp"></span><span class="muted small">Cherche d’abord seul, puis indice par indice.</span></div>';
   h += '<section class="statement">' + x.enonce + '</section>';
@@ -2805,7 +2923,8 @@ const BANQUE_LIST = ALL_EXOS.filter(x => x.kind === 'banque');
 Views.td = (app, parts) => {
   if (parts[0]) { const x = TD_LIST.find(t => String(t.n) === parts[0]); return x ? renderExo(app, x, TD_LIST) : Views.introuvable(app); }
   const nOk = TD_LIST.filter(x => exoStatus(x.id) === 'ok').length;
-  app.innerHTML = pageHead('TD2 · Induction électromagnétique', 'TD2 corrigé', 'Les 11 exercices du TD, énoncés reformulés, indices progressifs et corrections détaillées. Les remarques signalent les points ambigus des énoncés. ' + nOk + ' / 11 maîtrisés.') +
+  app.innerHTML = pageHead('TD2 · Induction électromagnétique', 'TD2 corrigé', 'Les 11 exercices du TD et l’exercice de flux coupé fait en cours : énoncés reformulés, indices progressifs et corrections détaillées. Les remarques signalent les points ambigus des énoncés. ' + nOk + ' / ' + TD_LIST.length + ' maîtrisés.') +
+    box('savoir', L`<p><b>Très probable au DS</b> : l'exercice de la spire en translation (flux coupé et loi de Faraday), donné en cours. <a href="#td/12">Voir sa correction</a>.</p>`) +
     '<div class="ex-list">' + TD_LIST.map(exoItem).join('') + '</div>' +
     box('methode', L`<p>Méthode de travail conseillée : relire l'énoncé, chercher 5 minutes, puis ouvrir un indice à la fois. Ouvrir la correction seulement ensuite, et marquer l'exercice « à revoir » si un indice a été nécessaire.</p>`);
 };
@@ -2816,7 +2935,7 @@ Views.exos = (app, parts, q) => {
   const pool = (src === 'td' ? TD_LIST : src === 'banque' ? BANQUE_LIST : ALL_EXOS);
   const list = pool.filter(x => (!th || x.theme === th) && (!ty || x.type === ty) && (!df || String(x.diff) === df) &&
     (!stt || (stt === 'new' ? !exoStatus(x.id) : exoStatus(x.id) === stt)));
-  let h = pageHead('Entraînement', 'Exercices', BANQUE.length + ' exercices d’entraînement construits sur les mécanismes du TD, plus les 11 exercices du TD2. Filtre par thème, type, difficulté ou statut.');
+  let h = pageHead('Entraînement', 'Exercices', BANQUE.length + ' exercices d’entraînement construits sur les mécanismes du TD, plus les 11 exercices du TD2 et l’exercice de cours sur le flux coupé. Filtre par thème, type, difficulté ou statut.');
   h += filterBar([
     { key: 'src', label: 'Source', opts: [['td', 'TD2'], ['banque', 'Banque']] },
     { key: 'theme', label: 'Thème', opts: THEME_OPTS },
